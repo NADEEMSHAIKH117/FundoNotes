@@ -24,7 +24,7 @@ class SendEmailRequest
         $name = 'Nadeem Shaikh';
         $email = $email;
         $subject = 'Regarding your Password Reset';
-        $data ="Your password Reset Link <br>".$token;
+        $data ="Your password Reset Link:- <br> <br>".$token;
           
         $mail = new PHPMailer(true);
 

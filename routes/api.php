@@ -24,12 +24,15 @@ Route::group([
     Route::post('/login',[UserController::class,'login']);
     Route::get('/userProfile',[UserController::class,'userProfile']);
     Route::post('/logout',[UserController::class,'logout']);
-
-    Route::post('/createNotes',[NotesController::class,'createNotes']);
-    Route::get('/displayNotes',[NotesController::class,'displayNotes']);
-
+    
     Route::post('forgotpassword', [ForgotPasswordController::class, 'forgotPassword']);
     Route::post('resetpassword', [ForgotPasswordController::class, 'resetpassword']);
+
+    Route::post('/createNotes',[NotesController::class,'createNotes']);
+    Route::get('/displayNoteById',[NotesController::class,'displayNoteById']);
+    Route::post('/updateNoteById',[NotesController::class,'updateNoteById']);
+    Route::post('/deleteNoteById',[NotesController::class,'deleteNoteById']);
+
 });
 
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {

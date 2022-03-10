@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
+use Carbon\Carbon;
 
 
 
@@ -15,7 +16,7 @@ class ForgotPasswordController extends Controller
 {
     public function forgotPassword(Request $request)
     {
-        $validator = Validator::make($request->all(), [
+             Validator::make($request->all(), [
             'email'=> 'required|string|email|max:100|unique:users',
         ]);
 
@@ -31,7 +32,7 @@ class ForgotPasswordController extends Controller
             $sendEmail->sendEmail($user->email, $token);
         }
         Log::info('Forgot PassWord Link : ' . 'Email Id :' . $request->email);
-        return response()->json(['message' => 'password reset link genereted in mail'], 200);
+        return response()->json(['message' => 'password reset link genereted in mail '], 200);
     }
 
     public function resetpassword(Request $request)
@@ -66,7 +67,4 @@ class ForgotPasswordController extends Controller
             ], 201);
         }
     }
-
-    
-
 }
