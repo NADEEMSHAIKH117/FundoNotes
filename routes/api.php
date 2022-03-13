@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\ForgotPasswordController;
+use App\Http\Controllers\LabelController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\NotesController;
 use Illuminate\Http\Request;
@@ -32,6 +33,17 @@ Route::group([
     Route::get('/displayNoteById',[NotesController::class,'displayNoteById']);
     Route::post('/updateNoteById',[NotesController::class,'updateNoteById']);
     Route::post('/deleteNoteById',[NotesController::class,'deleteNoteById']);
+
+    Route::post('/createLabel',[LabelController::class,'createLabel']);
+    Route::post('/addLabelByNoteId',[LabelController::class,'addLabelByNoteId']);
+    Route::get('/displayLabelById',[LabelController::class,'displayLabelById']);
+    Route::post('/updateLabelById',[LabelController::class,'updateLabelById']);
+    Route::post('/deleteLabelById',[LabelController::class,'deleteLabelById']);
+
+    Route::post('/pinNoteById',[NotesController::class,'pinNoteById']);
+    Route::post('/archiveNoteById',[NotesController::class,'archiveNoteById']);
+    Route::post('/colourNoteById',[NotesController::class,'colourNoteById']);
+
 
 });
 

@@ -2,10 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Exceptions\FundoNoteException;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use App\Models\User;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Auth;
 use Tymon\JWTAuth\Facades\JWTAuth;
 
 /**
@@ -41,15 +44,30 @@ class UserController extends Controller
         if ($validator->fails()) {
             return response()->json($validator->errors()->toJson(), 400);
         }
-        User::create(array_merge(
-            $validator->validated(),
-            ['password' => bcrypt($request->password)]
-        ));
+
+        try {
+            $user = USer::where('email', $request->email)->first();
+            if ($user) {
+                throw new FundoNoteException("The email has already been taken", 401);
+            }
+
+            $user = User::create([
+                'firstname' => $request->firstname,
+                'lastname' => $request->lastname,
+                'email' => $request->email,
+                'password' => bcrypt($request->password),
+            ]);
+            $value = Cache::remember('users', 3600, function () {
+                return DB::table('users')->get();
+            });
+        } catch (FundoNoteException $e) {
+
+            return response()->json(['message' => $e->message(), 'status' => $e->statusCode()]);
+        }
         return response()->json([
             'message' => 'User successfully registered',
         ], 201);
     }
-
     /**
      * Get a JWT via given credentials.
      * Login a user

@@ -7,6 +7,7 @@ use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Exception\RouteNotFoundException;
 use Throwable;
+use Tymon\JWTAuth\Exceptions\TokenExpiredException;
 use Tymon\JWTAuth\Exceptions\TokenInvalidException;
 
 class Handler extends ExceptionHandler
@@ -63,6 +64,16 @@ class Handler extends ExceptionHandler
                 return response()->json([
                     'error' => [
                         'message' => 'Invalid Token'
+                    ],
+                ]);
+            }
+        });
+
+        $this->renderable(function (TokenExpiredException $e, $request) {
+            if ($request->is('api/*')) {
+                return response()->json([
+                    'error' => [
+                        'message' => 'Token Expired'
                     ],
                 ]);
             }
