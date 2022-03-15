@@ -11,8 +11,15 @@ class Notes extends Model
     protected $table = 'notes';
     protected $fillable = [
         'title',
-        'description'
+        'description',
+        'pin',
+        'archive'
     ];
+    // protected $nullable = [
+    //     'pin',
+    //     'archive',
+    //     'colour'
+    // ];
     public function user()
     {
         return $this->belongsTo(User::class);

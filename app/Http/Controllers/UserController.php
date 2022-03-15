@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Models\User;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Auth;
 use Tymon\JWTAuth\Facades\JWTAuth;
@@ -38,7 +39,7 @@ class UserController extends Controller
         $validator = Validator::make($request->all(), [
             'firstname' => 'required|string|between:2,100',
             'lastname' => 'required|string|between:2,100',
-            'email' => 'required|string|email|max:100|unique:users',
+            'email' => 'required|string|email|max:100',
             'password' => 'required|string|confirmed|min:6',
         ]);
         if ($validator->fails()) {
@@ -46,9 +47,9 @@ class UserController extends Controller
         }
 
         try {
-            $user = USer::where('email', $request->email)->first();
+            $user = User::where('email', $request->email)->first();
             if ($user) {
-                throw new FundoNoteException("The email has already been taken", 401);
+                throw new FundoNoteException("The email has already been taken", 200);
             }
 
             $user = User::create([
@@ -78,18 +79,38 @@ class UserController extends Controller
      */
     public function login(Request $request)
     {
-
         $validator = Validator::make($request->all(), [
-            'email' => 'required|string|email',
-            'password' => 'required|string|min:6'
+            'email' => 'required|email',
+            'password' => 'required|string|min:6',
+            'pin' => 'nullable',
+            'archive' => 'nullable',
+            'colour' => 'nullable'
         ]);
+
         if ($validator->fails()) {
             return response()->json($validator->errors(), 422);
         }
+
+        $value = Cache::remember('users', 3600, function () {
+            return DB::table('users')->get();
+        });
+
+        $user = User::where('email', $request->email)->first();
+        if (!$user) {
+            Log::error('User failed to login.', ['id' => $request->email]);
+            return response()->json([
+                'message' => 'email not found register first'
+            ], 401);
+        }
+
         if (!$token = auth()->attempt($validator->validated())) {
             return response()->json(['error' => 'Unauthorized'], 401);
         }
-        return $this->createNewToken($token);
+        Log::info('Login Success : ' . 'Email Id :' . $request->email);
+        return response()->json([
+            'access_token' => $token,
+            'message' => 'Login successfull'
+        ], 200);
     }
 
     /**

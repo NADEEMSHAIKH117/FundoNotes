@@ -19,20 +19,50 @@ class NotesController extends Controller
         $validator = Validator::make($request->all(), [
             'title' => 'required|string|between:2,50',
             'description' => 'required|string|between:3,1000',
+            // 'pin' => 'nullable|int|between:0,1',
+            // 'archive' => 'nullable',
+            // 'colour' => 'nullable'
         ]);
 
         if ($validator->fails()) {
             return response()->json($validator->errors()->toJson(), 400);
         }
+        if(($request->has('pin'))==null)
+        {
+            $pin = 0;
+            // return response()->json(['message'=>'pin is null']);
+        }
+        
+        else{
+            $pin = $request->input('pin');
+
+        }
+        if(($request->has('archive'))==null)
+        {
+            $archive = 0;
+        }
+        else{
+            $archive = $request->input('archive');
+        }
+        if(($request->has('colour'))==null)
+        {
+            $colour = 'rgb(255,255,255)';
+        }
+        else{
+            $colour = $request->input('colour');
+        }
 
         try {
-            $note = new Notes; //calling model
+            $note = new Notes;
             $note->title = $request->input('title');
             $note->description = $request->input('description');
+            $note->pin =$pin;     
+            $note->archive =$archive;
+            $note->colour = $colour;
             $note->user_id = Auth::user()->id;
             $note->save();
             if (!$note) {
-                throw new FundoNoteException("Invalid Authorization token", 404);
+                throw new FundoNoteException("Invalid Authorization token ", 404);
             }
             $value = Cache::remember('notes', 3600, function () {
                 return DB::table('notes')->get();
@@ -44,13 +74,17 @@ class NotesController extends Controller
                 'message' => $e->message()
             ]);
         }
+        // if ($note->pin == 0) {
+        //     $user = Notes::where('pin', $request->pin)
+        //         ->update(['pin' => 1]);
+        // }        
+
         Log::info('notes created', ['user_id' => $note->user_id]);
         return response()->json([
             'status' => 201,
             'message' => 'notes created successfully'
         ]);
     }
-
 
     public function displayNoteById()
     {
@@ -76,14 +110,12 @@ class NotesController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'id' => 'required',
-            'title' => 'required|string|between:2,30',
-            'description' => 'required|string|between:3,1000'
+            'title' => 'string|between:2,30',
+            'description' => 'string|between:3,1000',
         ]);
-
         if ($validator->fails()) {
             return response()->json($validator->errors()->toJson(), 400);
         }
-
         try {
             $id = $request->input('id');
             $currentUser = JWTAuth::parseToken()->authenticate();
@@ -96,11 +128,12 @@ class NotesController extends Controller
                 Log::error('Notes Not Found', ['id' => $request->id]);
                 return response()->json(['message' => 'Notes not Found'], 404);
             }
+
             $note->fill($request->all());
 
             if ($note->save()) {
-                Log::info('notes update', ['user_id' => $currentUser, 'note_id' => $request->id]);
-                return response()->json(['Message' => 'Note Updated Successfully'], 201);
+                Log::info('notes updated', ['user_id' => $currentUser, 'note_id' => $request->id]);
+                return response()->json(['message' => 'Note updated Successfully'], 201);
             }
             if (!($note->save())) {
                 throw new FundoNoteException("Invalid Authorization token ", 404);
