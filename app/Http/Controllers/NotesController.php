@@ -14,59 +14,78 @@ use Tymon\JWTAuth\Facades\JWTAuth;
 
 class NotesController extends Controller
 {
+    /**
+     * @OA\Post(
+     *   path="/api/auth/createNotes",
+     *   summary="create note",
+     *   description="create user note",
+     *   @OA\RequestBody(
+     *         @OA\JsonContent(),
+     *         @OA\MediaType(
+     *            mediaType="multipart/form-data",
+     *            @OA\Schema(
+     *               type="object",
+     *               required={"title","description"},
+     *               @OA\Property(property="title", type="string"),
+     *               @OA\Property(property="description", type="string"),
+     *            ),
+     *        ),
+     *    ),
+     *   @OA\Response(response=201, description="notes created successfully"),
+     *   @OA\Response(response=401, description="Invalid authorization token"),
+     *   security={
+     *       {"Bearer": {}}
+     *     }
+     * )
+     * This function takes User access token and checks if it is
+     * authorised or not if so and it procees for the note creation
+     * and created it successfully.
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function createNotes(Request $request)
     {
         $validator = Validator::make($request->all(), [
             'title' => 'required|string|between:2,50',
             'description' => 'required|string|between:3,1000',
-            // 'pin' => 'nullable|int|between:0,1',
-            // 'archive' => 'nullable',
-            // 'colour' => 'nullable'
         ]);
 
         if ($validator->fails()) {
             return response()->json($validator->errors()->toJson(), 400);
         }
-        if(($request->has('pin'))==null)
-        {
+        if (($request->has('pin')) == null) {
             $pin = 0;
-            // return response()->json(['message'=>'pin is null']);
-        }
-        
-        else{
+        } else {
             $pin = $request->input('pin');
-
         }
-        if(($request->has('archive'))==null)
-        {
+        if (($request->has('archive')) == null) {
             $archive = 0;
-        }
-        else{
+        } else {
             $archive = $request->input('archive');
         }
-        if(($request->has('colour'))==null)
-        {
+        if (($request->has('colour')) == null) {
             $colour = 'rgb(255,255,255)';
-        }
-        else{
+        } else {
             $colour = $request->input('colour');
         }
-
+        if (($request->has('label')) == null) {
+            $label = 0;
+        } else {
+            $label = $request->input('label');
+        }
         try {
             $note = new Notes;
             $note->title = $request->input('title');
             $note->description = $request->input('description');
-            $note->pin =$pin;     
-            $note->archive =$archive;
+            $note->pin = $pin;
+            $note->archive = $archive;
             $note->colour = $colour;
+            $note->label = $label;
             $note->user_id = Auth::user()->id;
             $note->save();
             if (!$note) {
-                throw new FundoNoteException("Invalid Authorization token ", 404);
+                throw new FundoNoteException("Invalid Authorization token ", 401);
             }
-            $value = Cache::remember('notes', 3600, function () {
-                return DB::table('notes')->get();
-            });
         } catch (FundoNoteException $e) {
             Log::error('Invalid User');
             return response()->json([
@@ -74,11 +93,6 @@ class NotesController extends Controller
                 'message' => $e->message()
             ]);
         }
-        // if ($note->pin == 0) {
-        //     $user = Notes::where('pin', $request->pin)
-        //         ->update(['pin' => 1]);
-        // }        
-
         Log::info('notes created', ['user_id' => $note->user_id]);
         return response()->json([
             'status' => 201,
@@ -86,54 +100,113 @@ class NotesController extends Controller
         ]);
     }
 
+    /**
+     *   @OA\Get(
+     *   path="/api/auth/displayNoteById",
+     *   summary="display Note",
+     *   description="user display Note",
+     *   @OA\RequestBody(
+     *    ),
+     *   @OA\Response(response=200, description="All Notes are Fetched Successfully"),
+     *   @OA\Response(response=401, description="Invalid authorization token"),
+     *   security={
+     *       {"Bearer": {}}
+     *     }
+     * )
+     * This function takes access token and note id and finds
+     * if there is any note existing on that User id and note id if so
+     * it successfully returns that note id
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function displayNoteById()
     {
-        $currentUser = JWTAuth::parseToken()->authenticate();
-        $value = Cache::remember('notes', 3600, function () {
-            return DB::table('notes')->get();
-        });
-        if ($currentUser) {
-            $user = Notes::where('user_id', '=', $currentUser->id)->get();
-        }
-        if ($user == '[]') {
-            return response()->json(['message' => 'Notes not found'], 404);
-        }
+        try {
+            $currentUser = JWTAuth::parseToken()->authenticate();
+            $value = Cache::remember('notes', 3600, function () {
+                return DB::table('notes')->get();
+            });
+            if (!$currentUser) {
+                Log::error('Invalid User');
+                throw new FundoNoteException("Invalid authorization token", 401);
+            }
+            if ($currentUser) {
+                $user = Notes::where('user_id', '=', $currentUser->id)->get();
+            }
+            if ($user == '[]') {
+                return response()->json(['message' => 'Notes not found'], 404);
+            }
 
-        return response()->json([
-            'message' => 'All Notes are Fetched Successfully',
-            'Notes' => $user
-        ], 200);
+            // $paginate = $user->paginate(3);
+            return response()->json([
+                'message' => 'All Notes are Fetched Successfully',
+                'Notes' => $user
+            ], 200);
+        } catch (FundoNoteException $exception) {
+            return $exception->message();
+        }
     }
 
 
+    /**
+     *   @OA\Post(
+     *   path="/api/auth/updateNoteById",
+     *   summary="update note",
+     *   description="update user note",
+     *   @OA\RequestBody(
+     *         @OA\JsonContent(),
+     *         @OA\MediaType(
+     *            mediaType="application/x-www-form-urlencoded",
+     *            @OA\Schema(
+     *               type="object",
+     *               required={"id","title","description"},
+     *               @OA\Property(property="id"),
+     *               @OA\Property(property="title", type="string"),
+     *               @OA\Property(property="description", type="string"),
+     *            ),
+     *        ),
+     *    ),
+     *   @OA\Response(response=200, description="Note successfully updated"),
+     *   @OA\Response(response=404, description="Notes not found"),
+     *   @OA\Response(response=401, description="Invalid authorization token"),
+     *   security={
+     *       {"Bearer": {}}
+     *     }
+     * )
+     * This function takes the User access token and note id which
+     * user wants to update and finds the note id if it is existed
+     * or not if so, updates it successfully.
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function updateNoteById(Request $request)
     {
         $validator = Validator::make($request->all(), [
             'id' => 'required',
             'title' => 'string|between:2,30',
             'description' => 'string|between:3,1000',
+            'pin' => 'int|between:0,1',
+            'archive' => 'int|between:0,1',
+            'colour' => 'string|max:20',
+            'label' => 'string|max:20'
         ]);
         if ($validator->fails()) {
-            return response()->json($validator->errors()->toJson(), 400);
+            return response()->json($validator->errors()->toJson(), 401);
         }
         try {
             $id = $request->input('id');
             $currentUser = JWTAuth::parseToken()->authenticate();
             $note = $currentUser->notes()->find($id);
-            $value = Cache::remember('notes', 3600, function () {
-                return DB::table('notes')->get();
-            });
 
             if (!$note) {
                 Log::error('Notes Not Found', ['id' => $request->id]);
                 return response()->json(['message' => 'Notes not Found'], 404);
             }
-
             $note->fill($request->all());
 
             if ($note->save()) {
                 Log::info('notes updated', ['user_id' => $currentUser, 'note_id' => $request->id]);
-                return response()->json(['message' => 'Note updated Successfully'], 201);
+                return response()->json(['message' => 'Note updated Successfully'], 200);
             }
             if (!($note->save())) {
                 throw new FundoNoteException("Invalid Authorization token ", 404);
@@ -143,7 +216,35 @@ class NotesController extends Controller
         }
     }
 
-
+    /**
+     *   @OA\post(
+     *   path="/api/auth/deleteNoteById",
+     *   summary="delete note",
+     *   description="delete user note",
+     *   @OA\RequestBody(
+     *         @OA\JsonContent(),
+     *         @OA\MediaType(
+     *            mediaType="application/x-www-form-urlencoded",
+     *            @OA\Schema(
+     *               type="object",
+     *               required={"id"},
+     *               @OA\Property(property="id", type="integer"),
+     *            ),
+     *        ),
+     *    ),
+     *   @OA\Response(response=200, description="Note deleted Successfully"),
+     *   @OA\Response(response=404, description="Notes not found"),
+     *   @OA\Response(response=401, description="Invalid Authorization token"),
+     *   security={
+     *       {"Bearer": {}}
+     *     }
+     * )
+     * This function takes the User access token and note id which
+     * user wants to delete and finds the note id if it is existed
+     * or not if so, deletes it successfully.
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function deleteNoteById(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -156,9 +257,6 @@ class NotesController extends Controller
             $id = $request->input('id');
             $currentUser = JWTAuth::parseToken()->authenticate();
             $note = $currentUser->notes()->find($id);
-            $value = Cache::remember('notes', 3600, function () {
-                return DB::table('notes')->get();
-            });
 
             if (!$note) {
                 Log::error('Notes Not Found', ['id' => $request->id]);
@@ -167,16 +265,57 @@ class NotesController extends Controller
 
             if ($note->delete()) {
                 Log::info('notes deleted', ['user_id' => $currentUser, 'note_id' => $request->id]);
-                return response()->json(['message' => 'Note deleted Successfully'], 201);
+                return response()->json(['message' => 'Note deleted Successfully'], 200);
             }
             if (!($note->delete())) {
-                throw new FundoNoteException("Invalid Authorization token ", 404);
+                throw new FundoNoteException("Invalid Authorization token ", 401);
             }
         } catch (FundoNoteException $e) {
             return response()->json(['message' => $e->message(), 'status' => $e->statusCode()]);
         }
     }
 
+    public function paginationNote()
+    {
+        $allNotes = Notes::paginate(3);
+
+        return response()->json([
+            'status' => 201,
+            'message' => 'Pagination aplied to all Notes',
+            'notes' =>  $allNotes,
+        ], 201);
+    }
+
+    /**
+     * @OA\Post(
+     *   path="/api/auth/pinNoteById",
+     *   summary="Pin Note",
+     *   description=" Pin Note ",
+     *   @OA\RequestBody(
+     *         @OA\JsonContent(),
+     *         @OA\MediaType(
+     *            mediaType="multipart/form-data",
+     *            @OA\Schema(
+     *               type="object",
+     *               required={"id"},
+     *               @OA\Property(property="id", type="integer"),
+     *            ),
+     *        ),
+     *    ),
+     *   @OA\Response(response=201, description="Note Pinned Sucessfully"),
+     *   @OA\Response(response=404, description="Notes not Found"),
+     *   security = {
+     * {
+     * "Bearer" : {}}}
+     * )
+     */
+    /**
+     * This function takes the User access token and checks if it
+     * authorised or not and it takes the note_id and pins  it
+     * successfully if notes is exist.
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function pinNoteById(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -196,13 +335,43 @@ class NotesController extends Controller
         }
 
         if ($note->pin == 0) {
-            $user = Notes::where('id', $request->id)
-                ->update(['pin' => 1]);
+            if ($note->archive == 1) {
+                $note->archive = 0;
+                $note->save();
+            }
+            $note->pin = 1;
+            $note->save();
 
             Log::info('notes pinned', ['user_id' => $currentUser, 'note_id' => $request->id]);
             return response()->json(['message' => 'Note pinned Successfully'], 201);
         }
     }
+
+
+    public function getAllPinnedNotes()
+    {
+        try {
+            $notes = new Notes();
+            $notes->user_id = auth()->id();
+            $currentUser = JWTAuth::parseToken()->authenticate();
+
+            if ($notes->user_id == auth()->id()) {
+                $usernotes = Notes::where([['user_id', '=', $currentUser->id], ['pin', '=', 1]])->get();
+                if ($usernotes == '[]') {
+                    return response()->json(['message' => 'Notes not found'], 404);
+                }
+                return response()->json([
+                    'message' => 'Fetched Pinned Notes Successfully',
+                    'notes' => $usernotes
+                ], 201);
+            } else {
+                throw new FundoNoteException("Invalid token", 403);
+            }
+        } catch (FundoNoteException $exception) {
+            return $exception->message();
+        }
+    }
+
 
     public function archiveNoteById(Request $request)
     {
@@ -223,11 +392,40 @@ class NotesController extends Controller
         }
 
         if ($note->archive == 0) {
-            $user = Notes::where('id', $request->id)
-                ->update(['archive' => 1]);
+            if ($note->pin == 1) {
+                $note->pin = 0;
+                $note->save();
+            }
+            $note->archive = 1;
+            $note->save();
 
             Log::info('notes archived', ['user_id' => $currentUser, 'note_id' => $request->id]);
             return response()->json(['message' => 'Note archived Successfully'], 201);
+        }
+    }
+
+
+    public function getAllArchiveNotes()
+    {
+        try {
+            $notes = new Notes();
+            $notes->user_id = auth()->id();
+            $currentUser = JWTAuth::parseToken()->authenticate();
+
+            if ($notes->user_id == auth()->id()) {
+                $usernotes = Notes::where([['user_id', '=', $currentUser->id], ['archive', '=', 1]])->get();
+                if ($usernotes == '[]') {
+                    return response()->json(['message' => 'Notes not found'], 404);
+                }
+                return response()->json([
+                    'message' => 'Fetched Archive Notes Successfully',
+                    'notes' => $usernotes
+                ], 201);
+            } else {
+                throw new FundoNoteException("Invalid token", 403);
+            }
+        } catch (FundoNoteException $exception) {
+            return $exception->message();
         }
     }
 

@@ -21,7 +21,7 @@ class UserControllerTest extends TestCase
             ->json('POST', '/api/auth/register', [
                 "firstname" => "Nadeem",
                 "lastname" => "Shaikh",
-                "email" => "nadeem123@gmail.com",
+                "email" => "nadeem1234@gmail.com",
                 "password" => "nadeem@123",
                 "password_confirmation" => "nadeem@123"
             ]);

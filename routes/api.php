@@ -33,15 +33,19 @@ Route::group([
     Route::get('/displayNoteById',[NotesController::class,'displayNoteById']);
     Route::post('/updateNoteById',[NotesController::class,'updateNoteById']);
     Route::post('/deleteNoteById',[NotesController::class,'deleteNoteById']);
+    Route::get('/paginationNote', [NotesController::class, 'paginationNote']);
 
     Route::post('/createLabel',[LabelController::class,'createLabel']);
-    Route::post('/addLabelByNoteId',[LabelController::class,'addLabelByNoteId']);
     Route::get('/displayLabelById',[LabelController::class,'displayLabelById']);
     Route::post('/updateLabelById',[LabelController::class,'updateLabelById']);
     Route::post('/deleteLabelById',[LabelController::class,'deleteLabelById']);
+    Route::post('/addLabelByNoteId',[LabelController::class,'addLabelByNoteId']);
+    Route::post('/deleteNoteLabel',[LabelController::class,'deleteNoteLabel']);
 
     Route::post('/pinNoteById',[NotesController::class,'pinNoteById']);
+    Route::get('/getAllPinnedNotes',[NotesController::class,'getAllPinnedNotes']);
     Route::post('/archiveNoteById',[NotesController::class,'archiveNoteById']);
+    Route::get('/getAllArchiveNotes',[NotesController::class,'getAllArchiveNotes']);
     Route::post('/colourNoteById',[NotesController::class,'colourNoteById']);
 
 

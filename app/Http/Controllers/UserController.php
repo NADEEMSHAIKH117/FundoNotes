@@ -6,13 +6,10 @@ use App\Exceptions\FundoNoteException;
 use Illuminate\Http\Request;
 use App\Models\User;
 use Illuminate\Support\Facades\Validator;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\Auth;
-use Tymon\JWTAuth\Facades\JWTAuth;
 
-/**
+
+/* 
  * This controller is for user registration, login, logout
  * and emailverify
  */
@@ -28,11 +25,35 @@ class UserController extends Controller
     }
 
     /**
-     * Register a User.
-     * path="api/register",
-     * summary="register",
-     * description="register the user for login",
-     * required=("firstname","lastname", "email", "password", "confirm_password")
+     * @OA\Post(
+     *   path="/api/auth/register",
+     *   summary="register",
+     *   description="register the user for login",
+     *   @OA\RequestBody(
+     *         @OA\JsonContent(),
+     *         @OA\MediaType(
+     *            mediaType="multipart/form-data",
+     *            @OA\Schema(
+     *               type="object",
+     *               required={"firstname","lastname","email", "password", "password_confirmation"},
+     *               @OA\Property(property="firstname", type="string"),
+     *               @OA\Property(property="lastname", type="string"),
+     *               @OA\Property(property="email", type="string"),
+     *               @OA\Property(property="password", type="password"),
+     *               @OA\Property(property="password_confirmation", type="password")
+     *            ),
+     *        ),
+     *    ),
+     *   @OA\Response(response=201, description="User successfully registered"),
+     *   @OA\Response(response=401, description="The email has already been taken"),
+     * )
+
+
+     * It takes a POST request and required fields for the user to register
+     * and validates them if it validated, creates those field including 
+     * values in DataBase and returns success response
+     *
+     *@return \Illuminate\Http\JsonResponse
      */
     public function register(Request $request)
     {
@@ -49,7 +70,7 @@ class UserController extends Controller
         try {
             $user = User::where('email', $request->email)->first();
             if ($user) {
-                throw new FundoNoteException("The email has already been taken", 200);
+                throw new FundoNoteException("The email has already been taken", 401);
             }
 
             $user = User::create([
@@ -58,9 +79,6 @@ class UserController extends Controller
                 'email' => $request->email,
                 'password' => bcrypt($request->password),
             ]);
-            $value = Cache::remember('users', 3600, function () {
-                return DB::table('users')->get();
-            });
         } catch (FundoNoteException $e) {
 
             return response()->json(['message' => $e->message(), 'status' => $e->statusCode()]);
@@ -69,31 +87,43 @@ class UserController extends Controller
             'message' => 'User successfully registered',
         ], 201);
     }
+
     /**
-     * Get a JWT via given credentials.
-     * Login a user
-     * path="api/login",
-     * summary="login"
-     * description="user login",s
-     * required=("email","password")
+     * @OA\Post(
+     *   path="/api/auth/login",
+     *   summary="login",
+     *   description=" login ",
+     *   @OA\RequestBody(
+     *         @OA\JsonContent(),
+     *         @OA\MediaType(
+     *            mediaType="multipart/form-data",
+     *            @OA\Schema(
+     *               type="object",
+     *               required={"email", "password"},
+     *               @OA\Property(property="email", type="string"),
+     *               @OA\Property(property="password", type="password"),
+     *            ),
+     *        ),
+     *    ),
+     * @OA\Response(response=200, description="Login successfull"),
+     * @OA\Response(response=401, description="email not found register first"),
+     * 
+     * )
+     * Takes the POST request and user credentials checks if it correct,
+     * if so, returns JWT access token.
+     * 
+     * @return \Illuminate\Http\JsonResponse
      */
     public function login(Request $request)
     {
         $validator = Validator::make($request->all(), [
             'email' => 'required|email',
             'password' => 'required|string|min:6',
-            'pin' => 'nullable',
-            'archive' => 'nullable',
-            'colour' => 'nullable'
         ]);
 
         if ($validator->fails()) {
             return response()->json($validator->errors(), 422);
         }
-
-        $value = Cache::remember('users', 3600, function () {
-            return DB::table('users')->get();
-        });
 
         $user = User::where('email', $request->email)->first();
         if (!$user) {
@@ -113,12 +143,25 @@ class UserController extends Controller
         ], 200);
     }
 
+
+    /**   
+     *
+     * Takes the GET request and JWT access token to show the user profile
+     * 
+     * @return \Illuminate\Http\JsonResponse
+     */
     /**
-     * UserProfile
-     * path="api/userProfile"
-     * summary="profile"
-     * description="user profile"
-     * required="Token which is generated after login"
+     * @OA\Get(
+     *   path="/api/auth/userProfile",
+     *   summary="userProfile",
+     *   description="userProfile ",
+     *   @OA\RequestBody(      
+     *    ),
+     *   @OA\Response(response=404, description="Invalid authorization token"),
+     *   security={
+     *       {"Bearer": {}}
+     *     }
+     * )
      */
     public function userProfile()
     {
@@ -126,11 +169,28 @@ class UserController extends Controller
     }
 
     /**
-     * logout function
-     * path="api/logout"
-     * summary="logout"
-     * description="user logout"
-     * required="Token which is generated after login to logout the user"
+     * Takes the POST request and JWT access token to logout the user profile
+     * 
+     * @return \Illuminate\Http\JsonResponse
+     */
+    /**
+     * @OA\Post(
+     *   path="/api/auth/logout",
+     *   summary="logout",
+     *   description=" logout ",
+     *  @OA\RequestBody(
+     *         @OA\JsonContent(),
+     *         @OA\MediaType(
+     *            mediaType="multipart/form-data",
+     *            @OA\Schema(
+     *               type="object",
+     *               required={"token",},
+     *               @OA\Property(property="token", type="string"),
+     *            ),
+     *        ),
+     *    ),
+     *   @OA\Response(response=201, description="User successfully signed out"),
+     * )
      */
     public function logout()
     {
@@ -140,10 +200,12 @@ class UserController extends Controller
         ], 201);
     }
 
-
     /**
      * Get the token array structure.
-     * function for creating the token
+     *
+     * @param  string $token
+     *
+     * @return \Illuminate\Http\JsonResponse
      */
     protected function createNewToken($token)
     {
