@@ -275,6 +275,24 @@ class NotesController extends Controller
         }
     }
 
+        /**
+     * Functio used to view all notes
+     * ie; 3 notes per page wise  will be displayed.
+     */
+    /**
+     * @OA\Get(
+     *   path="/api/auth/paginationNote",
+     *   summary="Display Paginate Notes",
+     *   description=" Display Paginate Notes ",
+     *   @OA\RequestBody(
+     *         
+     *    ),
+     *   @OA\Response(response=201, description="Pagination aplied to all Notes"),
+     *   security = {
+     * {
+     * "Bearer" : {}}}
+     * )
+     */
     public function paginationNote()
     {
         $allNotes = Notes::paginate(3);
@@ -286,6 +304,13 @@ class NotesController extends Controller
         ], 201);
     }
 
+     /**
+     * This function takes the User access token and checks if it 
+     * authorised or not and it takes the note_id and pins  it 
+     * successfully if notes is exist.  
+     * 
+     * @return \Illuminate\Http\JsonResponse
+     */
     /**
      * @OA\Post(
      *   path="/api/auth/pinNoteById",
@@ -308,13 +333,6 @@ class NotesController extends Controller
      * {
      * "Bearer" : {}}}
      * )
-     */
-    /**
-     * This function takes the User access token and checks if it
-     * authorised or not and it takes the note_id and pins  it
-     * successfully if notes is exist.
-     *
-     * @return \Illuminate\Http\JsonResponse
      */
     public function pinNoteById(Request $request)
     {
@@ -348,6 +366,28 @@ class NotesController extends Controller
     }
 
 
+        /**
+     * This function takes the User access token and checks if it 
+     * authorised or not if so, it returns all the pinned notes 
+     * successfully.  
+     * 
+     * @return \Illuminate\Http\JsonResponse
+     */
+    /**
+     * @OA\Get(
+     *   path="/api/auth/getAllPinnedNotes",
+     *   summary="Display All Pinned Notes",
+     *   description=" Display All Pinned Notes ",
+     *   @OA\RequestBody(
+     *         
+     *    ),
+     *   @OA\Response(response=404, description="Invalid token"),
+     *   @OA\Response(response=201, description="Fetched Pinned Notes Successfully"),
+     *   security = {
+     * {
+     * "Bearer" : {}}}
+     * )
+     */
     public function getAllPinnedNotes()
     {
         try {
@@ -365,7 +405,7 @@ class NotesController extends Controller
                     'notes' => $usernotes
                 ], 201);
             } else {
-                throw new FundoNoteException("Invalid token", 403);
+                throw new FundoNoteException("Invalid token", 404);
             }
         } catch (FundoNoteException $exception) {
             return $exception->message();
@@ -373,6 +413,36 @@ class NotesController extends Controller
     }
 
 
+        /**
+     * This function takes the User access token and checks if it 
+     * authorised or not and it takes the note_id and Archives it 
+     * successfully if notes exist.  
+     * 
+     * @return \Illuminate\Http\JsonResponse
+     */
+    /**
+     * @OA\Post(
+     *   path="/api/auth/archiveNoteById",
+     *   summary="Archive Note",
+     *   description=" Archive Note ",
+     *   @OA\RequestBody(
+     *         @OA\JsonContent(),
+     *         @OA\MediaType(
+     *            mediaType="multipart/form-data",
+     *            @OA\Schema(
+     *               type="object",
+     *               required={"id"},
+     *               @OA\Property(property="id", type="integer"),
+     *            ),
+     *        ),
+     *    ),
+     *   @OA\Response(response=201, description="Note Archived Sucessfully"),
+     *   @OA\Response(response=404, description="Notes not Found"),
+     *   security = {
+     * {
+     * "Bearer" : {}}}
+     * )
+     */
     public function archiveNoteById(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -404,7 +474,29 @@ class NotesController extends Controller
         }
     }
 
-
+     /**
+     * This function takes the User access token and checks if it 
+     * authorised or not if so, it returns all the Archived notes 
+     * successfully.  
+     * 
+     * @return \Illuminate\Http\JsonResponse
+     */
+    /**
+     * @OA\Get(
+     *   path="/api/auth/getAllArchiveNotes",
+     *   summary="Display All Archived Notes",
+     *   description=" Display All Archived Notes ",
+     *   @OA\RequestBody(
+     *         
+     *    ),
+     *   @OA\Response(response=404, description="Invalid token"),
+     *   @OA\Response(response=201, description="Fetched Archived Notes"),
+     *   @OA\Response(response=403, description="Notes not found"),
+     *   security = {
+     * {
+     * "Bearer" : {}}}
+     * )
+     */
     public function getAllArchiveNotes()
     {
         try {
@@ -415,20 +507,52 @@ class NotesController extends Controller
             if ($notes->user_id == auth()->id()) {
                 $usernotes = Notes::where([['user_id', '=', $currentUser->id], ['archive', '=', 1]])->get();
                 if ($usernotes == '[]') {
-                    return response()->json(['message' => 'Notes not found'], 404);
+                    return response()->json(['message' => 'Notes not found'], 403);
                 }
                 return response()->json([
                     'message' => 'Fetched Archive Notes Successfully',
                     'notes' => $usernotes
                 ], 201);
             } else {
-                throw new FundoNoteException("Invalid token", 403);
+                throw new FundoNoteException("Invalid token", 404);
             }
         } catch (FundoNoteException $exception) {
             return $exception->message();
         }
     }
 
+     /**
+     * This function takes the User access token and checks if it 
+     * authorised or not and it takes the note_id and colours it 
+     * successfully if notes exist.  
+     * 
+     * @return \Illuminate\Http\JsonResponse
+     */
+    /**
+     * @OA\Post(
+     *   path="/api/auth/colourNoteById",
+     *   summary="Colour Note",
+     *   description=" Colour Note ",
+     *   @OA\RequestBody(
+     *         @OA\JsonContent(),
+     *         @OA\MediaType(
+     *            mediaType="multipart/form-data",
+     *            @OA\Schema(
+     *               type="object",
+     *               required={"id" , "colour"},
+     *               @OA\Property(property="id", type="integer"),
+     *               @OA\Property(property="colour", type="string"),
+     *            ),
+     *        ),
+     *    ),
+     *   @OA\Response(response=201, description="Note coloured Sucessfully"),
+     *   @OA\Response(response=404, description="Notes not Found"),
+     *  @OA\Response(response=400, description="Colour Not Specified in the List"),
+     *   security = {
+     * {
+     * "Bearer" : {}}}
+     * )
+     */
     public function colourNoteById(Request $request)
     {
         $validator = Validator::make($request->all(), [

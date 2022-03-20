@@ -25,4 +25,8 @@ class Notes extends Model
     {
         return $this->belongsTo(Label::class);
     }
+    public function labelnote()
+    {
+        return $this->belongsTo(LabelNote::class);
+    }
 }
