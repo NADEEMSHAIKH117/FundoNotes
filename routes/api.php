@@ -40,6 +40,7 @@ Route::group([
     Route::post('/archiveNoteById',[NotesController::class,'archiveNoteById']);
     Route::get('/getAllArchiveNotes',[NotesController::class,'getAllArchiveNotes']);
     Route::post('/colourNoteById',[NotesController::class,'colourNoteById']);
+    Route::post('/searchAllNotes',[NotesController::class,'searchAllNotes']);
 
     Route::post('/createLabel',[LabelController::class,'createLabel']);
     Route::get('/displayLabelById',[LabelController::class,'displayLabelById']);

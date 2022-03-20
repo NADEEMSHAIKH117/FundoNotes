@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 use Symfony\Contracts\Service\Attribute\Required;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Auth;
 use Tymon\JWTAuth\Facades\JWTAuth;
 
 class LabelController extends Controller
@@ -399,16 +400,28 @@ class LabelController extends Controller
     public function displayNoteLabel()
     {
         $user = JWTAuth::parseToken()->authenticate();
-        $labelnote = LabelNotes::where('user_id', '=', $user->id)
-            ->where('note_id', '=', $user->id)
-            ->where('label_id', '=', $user->id)
-            ->get();
-        if ($labelnote == '') {
-            return response()->json(['message' => 'Label not Found'], 404);
+        if (!$user) {
+            return response()->json([
+                'status' => 404,
+                'message' => 'Invalid authorization token'
+            ], 404);
+        }
+
+        $labelnotes = LabelNotes::leftJoin('notes', 'notes.id', '=', 'label_notes.id')
+            ->leftJoin('labels', 'labels.id', '=', 'label_notes.label_id')
+            ->select('label_notes.id', 'labels.labelname', 'notes.title', 'notes.description', 'notes.pin', 'notes.archive', 'notes.colour')
+            ->where('label_notes.user_id', Auth::user()->id)->get();
+
+        if (!$labelnotes) {
+            return response()->json([
+                'status' => 404,
+                'message' => 'Notes not found'
+            ], 401);
         }
         return response()->json([
-            'message' => 'All Labels are Fetched Successfully',
-            'labelnote' => $labelnote
-        ]);
+            'status' => 201,
+            'message' => 'Labelnotes Fetched  Successfully',
+            'Labelnotes' => $labelnotes,
+        ], 201);
     }
 }
