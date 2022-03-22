@@ -14,6 +14,21 @@ use Tymon\JWTAuth\Facades\JWTAuth;
 
 class NotesController extends Controller
 {
+    public static $colours  =  array(
+        'green' => 'rgb(0,255,0)',
+        'red' => 'rgb(255,0,0)',
+        'blue' => 'rgb(0,0,255)',
+        'yellow' => 'rgb(255,255,0)',
+        'grey' => 'rgb(128,128,128)',
+        'purple' => 'rgb(128,0,128)',
+        'brown' => 'rgb(165,42,42)',
+        'orange' => 'rgb(255,165,0)',
+        'pink' => 'rgb(255,192,203)',
+        'black' => 'rgb(0,0,0)',
+        'silver' => 'rgb(192,192,192)',
+        'teal' => 'rgb(0,128,128)',
+        'white' => 'rgb(255,255,255)',
+    );
     /**
      * @OA\Post(
      *   path="/api/auth/createNotes",
@@ -28,6 +43,10 @@ class NotesController extends Controller
      *               required={"title","description"},
      *               @OA\Property(property="title", type="string"),
      *               @OA\Property(property="description", type="string"),
+     *               @OA\Property(property="pin", type="string"),
+     *               @OA\Property(property="archive", type="string"),
+     *               @OA\Property(property="colour", type="string"),
+     *                  
      *            ),
      *        ),
      *    ),
@@ -48,6 +67,7 @@ class NotesController extends Controller
         $validator = Validator::make($request->all(), [
             'title' => 'required|string|between:2,50',
             'description' => 'required|string|between:3,1000',
+
         ]);
 
         if ($validator->fails()) {
@@ -68,24 +88,24 @@ class NotesController extends Controller
         } else {
             $colour = $request->input('colour');
         }
-        if (($request->has('label')) == null) {
-            $label = 0;
-        } else {
-            $label = $request->input('label');
-        }
         try {
             $note = new Notes;
             $note->title = $request->input('title');
             $note->description = $request->input('description');
             $note->pin = $pin;
             $note->archive = $archive;
-            $note->colour = $colour;
-            $note->label = $label;
-            $note->user_id = Auth::user()->id;
+            // $note->colour = $note->colour($colour);
+            $colour_name = strtolower($request->colour);
+
+            if (isset(NotesController::$colours[$colour_name])) {
+                $note->colour = NotesController::$colours[$colour_name];
+                $note->user_id = Auth::user()->id;
+            
             $note->save();
             if (!$note) {
                 throw new FundoNoteException("Invalid Authorization token ", 401);
             }
+        }
         } catch (FundoNoteException $e) {
             Log::error('Invalid User');
             return response()->json([
@@ -120,39 +140,28 @@ class NotesController extends Controller
      * @return \Illuminate\Http\JsonResponse
      */
     public function displayNoteById()
-    { {
-            try {
-                $user = Auth::user();
-                $value = Cache::remember('notes', 3600, function () {
-                    return DB::table('notes')->get();
-                });
-                if (!$user) {
-                    Log::error('Invalid User');
-                    throw new FundoNoteException("Invalid authorization token", 401);
-                }
+    {
 
-                $notes = Notes::leftJoin('collaborators', 'collaborators.note_id', '=', 'notes.id')
-                    ->leftJoin('label_notes', 'label_notes.note_id', '=', 'notes.id')
-                    ->leftJoin('labels', 'labels.id', '=', 'label_notes.label_id')
-                    ->select('notes.id', 'notes.title', 'notes.description', 'notes.pin', 'notes.archive', 'notes.colour', 'labels.labelname', 'collaborators.email as Collaborator')
-                    ->where('notes.user_id', Auth::user()->id)->orWhere('collaborators.email', '=', $user->email)->get();
-
-                if (!$notes) {
-                    throw new FundoNoteException("Notes not found", 404);
-                }
-
-                return response()->json([
-                    'status' => 201,
-                    'message' => 'Fetched Notes Successfully',
-                    'Notes' => $notes
-                ], 201);
-            } catch (FundoNoteException $exception) {
-                return $exception->message();
+        try {
+            $user = Auth::user();
+            if (!$user) {
+                Log::error('Invalid User');
+                throw new FundoNoteException("Invalid authorization token", 401);
             }
+            $notes = new Notes();
+            return response()->json([
+                'status' => 201,
+                'message' => 'Fetched Notes Successfully',
+                 $notes->getAllNotes($user)
+            ], 201);
+
+            if (!$notes) {
+                throw new FundoNoteException("Notes not found", 404);
+            }
+        } catch (FundoNoteException $exception) {
+            return $exception->message();
         }
     }
-
-
     /**
      *   @OA\Post(
      *   path="/api/auth/updateNoteById",
@@ -207,7 +216,14 @@ class NotesController extends Controller
                 Log::error('Notes Not Found', ['id' => $request->id]);
                 return response()->json(['message' => 'Notes not Found'], 404);
             }
+    
             $note->fill($request->all());
+            
+            $colour_name = strtolower($request->colour);
+
+            if (isset(NotesController::$colours[$colour_name])) {
+                $note->colour = NotesController::$colours[$colour_name];
+                $note->user_id = Auth::user()->id;
 
             if ($note->save()) {
                 Log::info('notes updated', ['user_id' => $currentUser, 'note_id' => $request->id]);
@@ -216,6 +232,7 @@ class NotesController extends Controller
             if (!($note->save())) {
                 throw new FundoNoteException("Invalid Authorization token ", 404);
             }
+        }
         } catch (FundoNoteException $e) {
             return response()->json(['message' => $e->message(), 'status' => $e->statusCode()]);
         }
@@ -278,35 +295,6 @@ class NotesController extends Controller
         } catch (FundoNoteException $e) {
             return response()->json(['message' => $e->message(), 'status' => $e->statusCode()]);
         }
-    }
-
-    /**
-     * Functio used to view all notes
-     * ie; 3 notes per page wise  will be displayed.
-     */
-    /**
-     * @OA\Get(
-     *   path="/api/auth/paginationNote",
-     *   summary="Display Paginate Notes",
-     *   description=" Display Paginate Notes ",
-     *   @OA\RequestBody(
-     *         
-     *    ),
-     *   @OA\Response(response=201, description="Pagination aplied to all Notes"),
-     *   security = {
-     * {
-     * "Bearer" : {}}}
-     * )
-     */
-    public function paginationNote()
-    {
-        $allNotes = Notes::paginate(3);
-
-        return response()->json([
-            'status' => 201,
-            'message' => 'Pagination aplied to all Notes',
-            'notes' =>  $allNotes,
-        ], 201);
     }
 
     /**
@@ -399,22 +387,26 @@ class NotesController extends Controller
             $notes = new Notes();
             $notes->user_id = auth()->id();
             $currentUser = JWTAuth::parseToken()->authenticate();
+            if (!$currentUser) {
+                return response()->json([
+                    'status' => 404,
+                    'message' => 'Invalid authorization token'
+                ], 404);
+            }
 
             if ($notes->user_id == auth()->id()) {
-                $usernotes = Notes::leftJoin('collaborators', 'collaborators.note_id', '=', 'notes.id')
-                    ->leftJoin('label_notes', 'label_notes.note_id', '=', 'notes.id')
-                    ->leftJoin('labels', 'labels.id', '=', 'label_notes.label_id')
-                    ->select('notes.id', 'notes.title', 'notes.description', 'notes.pin', 'notes.archive', 'notes.colour', 'collaborators.email as Collaborator', 'labels.labelname')
-                    ->where([['notes.user_id', '=', $currentUser->id], ['pin', '=', 1]])->orWhere('collaborators.email', '=', $currentUser->email)->get();
-
+                $usernotes = new Notes();
+                return response()->json(
+                    [
+                        'message' => 'Fetched Pinned Notes Successfully',
+                         $usernotes->getAllPinNotes($currentUser)
+                    ],
+                    201
+                );
 
                 if ($usernotes == '[]') {
                     return response()->json(['message' => 'Notes not found'], 404);
                 }
-                return response()->json([
-                    'message' => 'Fetched Pinned Notes Successfully',
-                    'notes' => $usernotes
-                ], 201);
             } else {
                 throw new FundoNoteException("Invalid token", 404);
             }
@@ -516,20 +508,18 @@ class NotesController extends Controller
             $currentUser = JWTAuth::parseToken()->authenticate();
 
             if ($notes->user_id == auth()->id()) {
-                $usernotes = Notes::leftJoin('collaborators', 'collaborators.note_id', '=', 'notes.id')
-                    ->leftJoin('label_notes', 'label_notes.note_id', '=', 'notes.id')
-                    ->leftJoin('labels', 'labels.id', '=', 'label_notes.label_id')
-                    ->select('notes.id', 'notes.title', 'notes.description', 'notes.pin', 'notes.archive', 'notes.colour', 'collaborators.email as Collaborator', 'labels.labelname')
-                    ->where([['notes.user_id', '=', $currentUser->id], ['archive', '=', 1]])->orWhere('collaborators.email', '=', $currentUser->email)->get();
-
+                $usernotes = new Notes();
+                return response()->json(
+                    [
+                        'message' => 'Fetched Archive Notes Successfully',
+                        $usernotes->getAllArchive($currentUser)
+                    ],
+                    201
+                );
 
                 if ($usernotes == '[]') {
                     return response()->json(['message' => 'Notes not found'], 403);
                 }
-                return response()->json([
-                    'message' => 'Fetched Archive Notes Successfully',
-                    'notes' => $usernotes
-                ], 201);
             } else {
                 throw new FundoNoteException("Invalid token", 404);
             }
@@ -661,24 +651,18 @@ class NotesController extends Controller
         $currentUser = JWTAuth::parseToken()->authenticate();
 
         if ($currentUser) {
-
-            $usernotes = Notes::leftJoin('collaborators', 'collaborators.note_id', '=', 'notes.id')->leftJoin('label_notes', 'label_notes.note_id', '=', 'notes.id')->leftJoin('labels', 'labels.id', '=', 'label_notes.label_id')
-                ->select('notes.id', 'notes.title', 'notes.description', 'notes.pin', 'notes.archive', 'notes.colour', 'collaborators.email as Collaborator', 'labels.labelname')
-                ->where('notes.user_id', '=', $currentUser->id)->Where('notes.title', 'like', '%' . $searchKey . '%')
-                ->orWhere('notes.user_id', '=', $currentUser->id)->Where('notes.description', 'like', '%' . $searchKey . '%')
-                ->orWhere('notes.user_id', '=', $currentUser->id)->Where('labels.labelname', 'like', '%' . $searchKey . '%')
-                ->orWhere('collaborators.email', '=', $currentUser->email)->Where('notes.title', 'like', '%' . $searchKey . '%')
-                ->orWhere('collaborators.email', '=', $currentUser->email)->Where('notes.description', 'like', '%' . $searchKey . '%')
-                ->orWhere('collaborators.email', '=', $currentUser->email)->Where('labels.labelname', 'like', '%' . $searchKey . '%')
-                ->get();
+            $usernotes = new Notes();
+            return response()->json(
+                [
+                    'message' => 'Fetched Notes Successfully',
+                    'notes' => $usernotes->search($currentUser, $searchKey)
+                ],
+                201
+            );
 
             if ($usernotes == '[]') {
                 return response()->json(['message' => 'No results'], 404);
             }
-            return response()->json([
-                'message' => 'Fetched Notes Successfully',
-                'notes' => $usernotes
-            ], 201);
         }
         return response()->json(['message' => 'Invalid authorization token'], 403);
     }

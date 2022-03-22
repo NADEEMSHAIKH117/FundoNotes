@@ -34,7 +34,6 @@ Route::group([
     Route::get('/displayNoteById',[NotesController::class,'displayNoteById']);
     Route::post('/updateNoteById',[NotesController::class,'updateNoteById']);
     Route::post('/deleteNoteById',[NotesController::class,'deleteNoteById']);
-    Route::get('/paginationNote', [NotesController::class, 'paginationNote']);
     Route::post('/pinNoteById',[NotesController::class,'pinNoteById']);
     Route::get('/getAllPinnedNotes',[NotesController::class,'getAllPinnedNotes']);
     Route::post('/archiveNoteById',[NotesController::class,'archiveNoteById']);
@@ -47,7 +46,6 @@ Route::group([
     Route::post('/updateLabelById',[LabelController::class,'updateLabelById']);
     Route::post('/deleteLabelById',[LabelController::class,'deleteLabelById']);
     Route::post('/addLabelByNoteId',[LabelController::class,'addLabelByNoteId']);
-    Route::get('/displayNoteLabel',[LabelController::class,'displayNoteLabel']);
     Route::post('/deleteNoteLabel',[LabelController::class,'deleteNoteLabel']);
 
     Route::post('/addCollaboratorByNoteId',[CollaboratorController::class,'addCollaboratorByNoteId']);

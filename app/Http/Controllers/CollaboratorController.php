@@ -12,9 +12,9 @@ use Tymon\JWTAuth\Facades\JWTAuth;
 use App\Models\User;
 
 class CollaboratorController extends Controller
-{   
+{
 
-        /**
+    /**
      * This function takes User access token and checks if it is
      * authorised or not if so and takes note_id, email if those 
      * parameters are valid it will successfully creates a 
@@ -61,6 +61,7 @@ class CollaboratorController extends Controller
         $note = $currentUser->notes()->find($request->input('note_id'));
         $user = User::where('email', $request->email)->first();
 
+
         if ($currentUser) {
             if ($note) {
                 if ($user) {
@@ -91,7 +92,7 @@ class CollaboratorController extends Controller
         return response()->json(['message' => 'Invalid authorization token'], 404);
     }
 
-        /**
+    /**
      * This function takes User access token of collaborator and
      * checks if it is authorised or not if so and takes note details
      * as parametres if those are valid updates the notes successfully. 
@@ -167,7 +168,7 @@ class CollaboratorController extends Controller
         return response()->json(['message' => 'Invalid authorization token'], 404);
     }
 
-     /**
+    /**
      * This function takes User access token and checks if it is 
      * authorised or not if so and takes note_id and collabarator email
      * as parametres if those are valid deletes the notes successfully. 
@@ -204,38 +205,34 @@ class CollaboratorController extends Controller
             'note_id' => 'required',
             'email' => 'required|string|email|max:100',
         ]);
-        if($validator->fails())
-        {
+        if ($validator->fails()) {
             return response()->json($validator->errors()->toJson(), 400);
         }
-        
+
         $id = $request->input('note_id');
         $currentUser = JWTAuth::parseToken()->authenticate();
-        if($currentUser)
-        {
+        if ($currentUser) {
             $id = $request->input('note_id');
             $email =  $request->input('email');
 
             $collaborator = Collaborator::select('id')->where([
-                                    ['note_id','=',$id],
-                                    ['email','=',$email]
-                                    ])->get();
-                    
-            if($collaborator == '[]')
-            {
-                return response()->json(['message' => 'Collaborater Not created' ], 404); 
+                ['note_id', '=', $id],
+                ['email', '=', $email]
+            ])->get();
+
+            if ($collaborator == '[]') {
+                return response()->json(['message' => 'Collaborater Not created'], 404);
             }
 
             $collabDelete = DB::table('collaborators')->where('note_id', '=', $id)->where('email', '=', $email)->delete();
-            if($collabDelete)
-            {
-                return response()->json(['message' => 'Collaborator deleted Sucessfully' ], 201);
+            if ($collabDelete) {
+                return response()->json(['message' => 'Collaborator deleted Sucessfully'], 201);
             }
-            return response()->json(['message' => 'Collaborator could not deleted' ], 404);      
+            return response()->json(['message' => 'Collaborator could not deleted'], 404);
         }
     }
 
-        /**
+    /**
      * This function takes User access token and checks if it is
      *  authorised or not if so it returns all the collabarators
      *  he has created.
@@ -261,19 +258,17 @@ class CollaboratorController extends Controller
     {
         $currentUser = JWTAuth::parseToken()->authenticate();
 
-        if ($currentUser) 
-        {
-            $collaborator = Collaborator::select('note_id', 'email') ->where([['user_id', '=', $currentUser->id],])->get();
+        if ($currentUser) {
+            $collaborator = Collaborator::select('note_id', 'email')->where([['user_id', '=', $currentUser->id],])->get();
 
-            if ($collaborator=='[]')
-            {
+            if ($collaborator == '[]') {
                 return response()->json(['message' => 'Collaborators not found'], 404);
             }
             return response()->json([
                 'message' => 'Fetched Collaborators Successfully',
                 'Collaborator' => $collaborator
-            ], 201);       
+            ], 201);
         }
-        return response()->json(['message' => 'Invalid authorization token'],403);
+        return response()->json(['message' => 'Invalid authorization token'], 403);
     }
 }

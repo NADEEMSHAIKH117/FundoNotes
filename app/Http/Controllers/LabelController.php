@@ -103,9 +103,10 @@ class LabelController extends Controller
         if ($labels == '') {
             return response()->json(['message' => 'Label not Found'], 404);
         }
+        $paginate = Label::paginate(3);
         return response()->json([
             'message' => 'All Labels are Fetched Successfully',
-            'label' => $labels
+            'label' => $paginate
         ], 200);
     }
 
@@ -373,55 +374,5 @@ class LabelController extends Controller
             'status' => 401,
             'message' => 'Invalid authorization token'
         ], 401);
-    }
-
-    /**
-     * This function takes the User access token and label id and note id and 
-     * displays that respective label id.
-     * 
-     * 
-     * @return \Illuminate\Http\JsonResponse
-     */
-    /**
-     * @OA\Get(
-     *   path="/api/auth/displayNoteLabel",
-     *   summary="Display Label note",
-     *   description=" Display LabelNote ",
-     *   @OA\RequestBody(
-     *         
-     *    ),
-     *   @OA\Response(response=404, description="Label not Found"),
-     *   @OA\Response(response=200, description="All Labels are Fetched Successfully"),
-     *   security = {
-     * {
-     * "Bearer" : {}}}
-     * )
-     */
-    public function displayNoteLabel()
-    {
-        $user = JWTAuth::parseToken()->authenticate();
-        if (!$user) {
-            return response()->json([
-                'status' => 404,
-                'message' => 'Invalid authorization token'
-            ], 404);
-        }
-
-        $labelnotes = LabelNotes::leftJoin('notes', 'notes.id', '=', 'label_notes.id')
-            ->leftJoin('labels', 'labels.id', '=', 'label_notes.label_id')
-            ->select('label_notes.id', 'labels.labelname', 'notes.title', 'notes.description', 'notes.pin', 'notes.archive', 'notes.colour')
-            ->where('label_notes.user_id', Auth::user()->id)->get();
-
-        if (!$labelnotes) {
-            return response()->json([
-                'status' => 404,
-                'message' => 'Notes not found'
-            ], 401);
-        }
-        return response()->json([
-            'status' => 201,
-            'message' => 'Labelnotes Fetched  Successfully',
-            'Labelnotes' => $labelnotes,
-        ], 201);
     }
 }

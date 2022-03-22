@@ -503,27 +503,6 @@
                 ]
             }
         },
-        "/api/auth/displayNoteLabel": {
-            "get": {
-                "summary": "Display Label note",
-                "description": " Display LabelNote ",
-                "operationId": "e986299fe7196ca36e72664266d74587",
-                "requestBody": {},
-                "responses": {
-                    "404": {
-                        "description": "Label not Found"
-                    },
-                    "200": {
-                        "description": "All Labels are Fetched Successfully"
-                    }
-                },
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ]
-            }
-        },
         "/api/auth/createNotes": {
             "post": {
                 "summary": "create note",
@@ -542,6 +521,15 @@
                                         "type": "string"
                                     },
                                     "description": {
+                                        "type": "string"
+                                    },
+                                    "pin": {
+                                        "type": "string"
+                                    },
+                                    "archive": {
+                                        "type": "string"
+                                    },
+                                    "colour": {
                                         "type": "string"
                                     }
                                 },
@@ -672,24 +660,6 @@
                     },
                     "401": {
                         "description": "Invalid Authorization token"
-                    }
-                },
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ]
-            }
-        },
-        "/api/auth/paginationNote": {
-            "get": {
-                "summary": "Display Paginate Notes",
-                "description": " Display Paginate Notes ",
-                "operationId": "3b08f9755ac9b6beaabc79a0a282b9da",
-                "requestBody": {},
-                "responses": {
-                    "201": {
-                        "description": "Pagination aplied to all Notes"
                     }
                 },
                 "security": [
