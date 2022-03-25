@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Mailer\SendEmailRequest;
+use App\Notifications\EmailToCollab;
 use App\Models\Collaborator;
 use App\Models\Notes;
 use Illuminate\Http\Request;
@@ -78,9 +79,13 @@ class CollaboratorController extends Controller
                     $collab->note_id = $request->get('note_id');
                     $collab->email = $request->get('email');
                     $collaborator = Notes::select('id', 'title', 'description', 'pin', 'archive', 'colour')->where([['id', '=', $request->note_id]])->get();
-                    if ($currentUser->collaborators()->save($collab)) {
-                        $sendEmail = new SendEmailRequest();
-                        $sendEmail->sendEmailToCollab($request->email, $collaborator, $currentUser->email);
+                    if ($currentUser->collaborators()->save($collab)) 
+                    {
+                        // $sendEmail = new SendEmailRequest();
+                        // $sendEmail->sendEmailToCollab($request->email, $collaborator, $currentUser->email);
+                        $delay = now()->addSeconds(60);
+                        $user->notify((new EmailToCollab($request->email, $collaborator))->delay($delay));
+
                         return response()->json(['message' => 'Collaborator create Sucessfully'], 201);
                     }
                     return response()->json(['message' => 'Could not add collab'], 404);

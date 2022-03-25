@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Exceptions\FundoNoteException;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 use App\Models\User;
 use Illuminate\Support\Facades\Validator;
@@ -44,7 +46,7 @@ class UserController extends Controller
      *            ),
      *        ),
      *    ),
-     *   @OA\Response(response=201, description="User successfully registered"),
+     *   @OA\Response(response=200, description="User successfully registered"),
      *   @OA\Response(response=401, description="The email has already been taken"),
      * )
 
@@ -79,13 +81,16 @@ class UserController extends Controller
                 'email' => $request->email,
                 'password' => bcrypt($request->password),
             ]);
+            Cache::remember('users', 3600, function () {
+                return DB::table('users')->get();
+            });
         } catch (FundoNoteException $e) {
 
             return response()->json(['message' => $e->message(), 'status' => $e->statusCode()]);
         }
         return response()->json([
             'message' => 'User successfully registered',
-        ], 201);
+        ], 200);
     }
 
     /**
@@ -124,6 +129,9 @@ class UserController extends Controller
         if ($validator->fails()) {
             return response()->json($validator->errors(), 422);
         }
+        Cache::remember('users', 3600, function () {
+            return DB::table('users')->get();
+        });
 
         $user = User::where('email', $request->email)->first();
         if (!$user) {

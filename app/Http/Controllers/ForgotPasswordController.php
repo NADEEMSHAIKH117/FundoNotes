@@ -2,13 +2,16 @@
 
 namespace App\Http\Controllers;
 
+use App\Exceptions\FundoNoteException;
+
 use App\Http\Mailer\SendEmailRequest;
 use App\Models\User;
+use App\Notifications\PasswordResetRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
-use Carbon\Carbon;
+
 
 
 
@@ -46,24 +49,40 @@ class ForgotPasswordController extends Controller
      */
     public function forgotPassword(Request $request)
     {
-        $validator = Validator::make($request->all(), [
-            'email' => 'required|string|email|max:100|unique:users',
-        ]);
+        try {
+            $validator = Validator::make($request->all(), [
+                'email' => 'required|string|email|max:100',
+            ]);
 
-        $user = User::where('email', $request->email)->first();
+            if($validator->fails()) {
+                return response()->json([
+                    'validation_error' => $validator->errors(),
+                ]);
+            }
 
-        if (!$user) {
-            return response()->json(['message' => 'we can not find a user with that email address'], 404);
+            $user = User::where('email', $request->email)->first();
+
+            if (!$user)
+            {
+                throw new FundoNoteException("we can not find a user with that email address", 404);
+            }
+
+            $token = Auth::fromUser($user);
+
+            if ($user)
+            {
+                $delay = now()->addSeconds(30);
+                $user->notify((new PasswordResetRequest($user->email, $token))->delay($delay));
+            }
+
+            return response()->json([
+                'status' => 200,
+                'message' => 'password reset link genereted in mail'
+            ],200);
+        } catch (FundoNoteException $exception) {
+            return $exception->message();
         }
-        $token = Auth::fromUser($user);
-
-        if ($user) {
-            $sendEmail = new SendEmailRequest();
-            $sendEmail->sendEmail($user->email, $token);
-        }
-
-        Log::info('Forgot PassWord Link : ' . 'Email Id :' . $request->email);
-        return response()->json(['message' => 'password reset link genereted in mail'], 200);
+    
     }
 
     /**

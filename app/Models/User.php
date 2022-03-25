@@ -31,7 +31,7 @@ class User extends Authenticatable implements JWTSubject
         'remember_token',
     ];
 
-    //Mutator
+    // //Mutator
 
     public function setFirstnameAttribute($value) {
         $this->attributes['firstname'] = ucfirst($value);
@@ -44,7 +44,7 @@ class User extends Authenticatable implements JWTSubject
     //Accessors
     
     public function getFirstnameAttribute($value) {
-        return 'Mr/s. '.ucfirst($value);
+        return 'Mr/s '.ucfirst($value);
     }
 
     /**

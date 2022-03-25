@@ -923,7 +923,7 @@
                     }
                 },
                 "responses": {
-                    "201": {
+                    "200": {
                         "description": "User successfully registered"
                     },
                     "401": {

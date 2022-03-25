@@ -10,6 +10,7 @@ class UserControllerTest extends TestCase
 {
     /**
      * Successfull registration
+     * This test is for to see if user is getting Register Successfully
      *
      * @test
      */
@@ -21,16 +22,17 @@ class UserControllerTest extends TestCase
             ->json('POST', '/api/auth/register', [
                 "firstname" => "Nadeem",
                 "lastname" => "Shaikh",
-                "email" => "nadeem1234@gmail.com",
+                "email" => "nadeem1236@gmail.com",
                 "password" => "nadeem@123",
                 "password_confirmation" => "nadeem@123"
             ]);
 
-        $response->assertStatus(201)->assertJson(['message' => 'User successfully registered']);
+        $response->assertStatus(200)->assertJson(['message' => 'User successfully registered']);
     }
 
     /**
      * @test for
+     * This test is for to see 
      * Already Registered User
      */
     public function test_If_User_Already_Registered()

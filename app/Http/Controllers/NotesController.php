@@ -94,18 +94,20 @@ class NotesController extends Controller
             $note->description = $request->input('description');
             $note->pin = $pin;
             $note->archive = $archive;
-            // $note->colour = $note->colour($colour);
+            $note->colour = $colour;
             $colour_name = strtolower($request->colour);
 
             if (isset(NotesController::$colours[$colour_name])) {
                 $note->colour = NotesController::$colours[$colour_name];
-                $note->user_id = Auth::user()->id;
-            
+            }
+            $note->user_id = Auth::user()->id;
             $note->save();
             if (!$note) {
                 throw new FundoNoteException("Invalid Authorization token ", 401);
             }
-        }
+            Cache::remember('notes', 3600, function () {
+                return DB::table('notes')->get();
+            });
         } catch (FundoNoteException $e) {
             Log::error('Invalid User');
             return response()->json([
@@ -148,6 +150,10 @@ class NotesController extends Controller
                 Log::error('Invalid User');
                 throw new FundoNoteException("Invalid authorization token", 401);
             }
+            Cache::remember('notes', 3600, function () {
+                return DB::table('notes')->get();
+            });
+
             $notes = new Notes();
             return response()->json([
                 'status' => 201,
@@ -211,6 +217,9 @@ class NotesController extends Controller
             $id = $request->input('id');
             $currentUser = JWTAuth::parseToken()->authenticate();
             $note = $currentUser->notes()->find($id);
+            $value = Cache::remember('notes', 3600, function () {
+                return DB::table('notes')->get();
+            });
 
             if (!$note) {
                 Log::error('Notes Not Found', ['id' => $request->id]);
@@ -223,6 +232,7 @@ class NotesController extends Controller
 
             if (isset(NotesController::$colours[$colour_name])) {
                 $note->colour = NotesController::$colours[$colour_name];
+            }
                 $note->user_id = Auth::user()->id;
 
             if ($note->save()) {
@@ -232,7 +242,6 @@ class NotesController extends Controller
             if (!($note->save())) {
                 throw new FundoNoteException("Invalid Authorization token ", 404);
             }
-        }
         } catch (FundoNoteException $e) {
             return response()->json(['message' => $e->message(), 'status' => $e->statusCode()]);
         }
@@ -279,6 +288,9 @@ class NotesController extends Controller
             $id = $request->input('id');
             $currentUser = JWTAuth::parseToken()->authenticate();
             $note = $currentUser->notes()->find($id);
+            Cache::remember('notes', 3600, function () {
+                return DB::table('notes')->get();
+            });
 
             if (!$note) {
                 Log::error('Notes Not Found', ['id' => $request->id]);

@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 use Symfony\Contracts\Service\Attribute\Required;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use Tymon\JWTAuth\Facades\JWTAuth;
 
@@ -65,6 +66,9 @@ class LabelController extends Controller
 
             $label = new Label;
             $label->labelname = $request->get('labelname');
+            Cache::remember('labels', 3600, function () {
+                return DB::table('labels')->get();
+            });
 
             if ($currentUser->labels()->save($label)) {
                 return response()->json(['message' => 'Label added Sucessfully'], 201);
@@ -230,6 +234,9 @@ class LabelController extends Controller
                 Log::error('Label Not Found', ['label_id' => $request->id]);
                 return response()->json(['message' => 'label not Found'], 403);
             }
+            Cache::remember('labels', 3600, function () {
+                return DB::table('labels')->get();
+            });
 
             if ($label->delete()) {
                 Log::info('label deleted', ['user_id' => $currentUser, 'label_id' => $request->id]);
