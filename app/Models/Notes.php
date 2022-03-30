@@ -37,7 +37,7 @@ class Notes extends Model
             ->leftJoin('label_notes', 'label_notes.note_id', '=', 'notes.id')
             ->leftJoin('labels', 'labels.id', '=', 'label_notes.label_id')
             ->select('notes.id', 'notes.title', 'notes.description', 'notes.pin', 'notes.archive', 'notes.colour', 'collaborators.email as Collaborator', 'labels.labelname')
-            ->where('notes.user_id', '=', Auth::user()->id)->orWhere('collaborators.email', '=', $user->email)->paginate(3);
+            ->where('notes.user_id', '=', Auth::user()->id)->orWhere('collaborators.email', '=', $user->email)->paginate(8);
         return $notes;
     }
     public function getAllPinNotes($currentUser)

@@ -17,16 +17,16 @@ class collaboratorControllerTest extends TestCase
     {
         $response = $this->withHeaders([
             'Content-Type' => 'Application/json',
-            'Authorization' => 'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOlwvXC8xMjcuMC4wLjE6ODAwMFwvYXBpXC9hdXRoXC9sb2dpbiIsImlhdCI6MTY0Nzc5MTE2NCwiZXhwIjoxNjQ3Nzk0NzY0LCJuYmYiOjE2NDc3OTExNjQsImp0aSI6IkI0aE05azRBb1dUbWp6dnUiLCJzdWIiOjEsInBydiI6IjIzYmQ1Yzg5NDlmNjAwYWRiMzllNzAxYzQwMDg3MmRiN2E1OTc2ZjcifQ.lP4Q-p7yxmIXKkLnUf4neejSMm2aGXyhhuPK-sYjfhM'
+            'Authorization' => 'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOlwvXC8xMjcuMC4wLjE6ODAwMFwvYXBpXC9hdXRoXC9sb2dpbiIsImlhdCI6MTY0ODM3NDY5MSwiZXhwIjoxNjQ4Mzc4MjkxLCJuYmYiOjE2NDgzNzQ2OTEsImp0aSI6IlIyMER1a08yOE9taFRiYXUiLCJzdWIiOjEsInBydiI6IjIzYmQ1Yzg5NDlmNjAwYWRiMzllNzAxYzQwMDg3MmRiN2E1OTc2ZjcifQ.gqwtX02PNiRYqNjCVNneWp1CtvW0fCNLndNj0jxuLH0'
         ])->json(
             'POST',
             '/api/auth/addCollaboratorByNoteId',
             [
-                "note_id" => "2",
+                "note_id" => "5",
                 "email" => "nadeemshaikh1171998@gmail.com",
             ]
         );
-        $response->assertStatus(201)->assertJson(['message' => 'Collaborator created Sucessfully']);
+        $response->assertStatus(201)->assertJson(['message' => 'Collaborator create Sucessfully']);
     }
 
         /**
@@ -38,7 +38,7 @@ class collaboratorControllerTest extends TestCase
     {
         $response = $this->withHeaders([
             'Content-Type' => 'Application/json',
-            'Authorization' => 'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOlwvXC8xMjcuMC4wLjE6ODAwMFwvYXBpXC9hdXRoXC9sb2dpbiIsImlhdCI6MTY0NDA0NDI5OSwiZXhwIjoxNjQ0MDQ3ODk5LCJuYmYiOjE2NDQwNDQyOTksImp0aSI6IlVpMjlFbUoyNzBOR3JvWlYiLCJzdWIiOjEsInBydiI6IjIzYmQ1Yzg5NDlmNjAwYWRiMzllNzAxYzQwMDg3MmRiN2E1OTc2ZjcifQ.DA0vqFJDJHlKBZxc12glxdriXKgMv77zZjxCyBV0BB4'
+            'Authorization' => 'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOlwvXC8xMjcuMC4wLjE6ODAwMFwvYXBpXC9hdXRoXC9sb2dpbiIsImlhdCI6MTY0ODM3NDY5MSwiZXhwIjoxNjQ4Mzc4MjkxLCJuYmYiOjE2NDgzNzQ2OTEsImp0aSI6IlIyMER1a08yOE9taFRiYXUiLCJzdWIiOjEsInBydiI6IjIzYmQ1Yzg5NDlmNjAwYWRiMzllNzAxYzQwMDg3MmRiN2E1OTc2ZjcifQ.gqwtX02PNiRYqNjCVNneWp1CtvW0fCNLndNj0jxuLH0'
         ])->json(
             'POST',
             '/api/auth/addCollaboratorByNoteId',
@@ -60,12 +60,12 @@ class collaboratorControllerTest extends TestCase
     {
         $response = $this->withHeaders([
             'Content-Type' => 'Application/json',
-            'Authorization' => 'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOlwvXC8xMjcuMC4wLjE6ODAwMFwvYXBpXC9hdXRoXC9sb2dpbiIsImlhdCI6MTY0NDA0NDI5OSwiZXhwIjoxNjQ0MDQ3ODk5LCJuYmYiOjE2NDQwNDQyOTksImp0aSI6IlVpMjlFbUoyNzBOR3JvWlYiLCJzdWIiOjEsInBydiI6IjIzYmQ1Yzg5NDlmNjAwYWRiMzllNzAxYzQwMDg3MmRiN2E1OTc2ZjcifQ.DA0vqFJDJHlKBZxc12glxdriXKgMv77zZjxCyBV0BB4'
+            'Authorization' => 'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOlwvXC8xMjcuMC4wLjE6ODAwMFwvYXBpXC9hdXRoXC9sb2dpbiIsImlhdCI6MTY0ODM3NDY5MSwiZXhwIjoxNjQ4Mzc4MjkxLCJuYmYiOjE2NDgzNzQ2OTEsImp0aSI6IlIyMER1a08yOE9taFRiYXUiLCJzdWIiOjEsInBydiI6IjIzYmQ1Yzg5NDlmNjAwYWRiMzllNzAxYzQwMDg3MmRiN2E1OTc2ZjcifQ.gqwtX02PNiRYqNjCVNneWp1CtvW0fCNLndNj0jxuLH0'
         ])->json(
             'POST',
             '/api/auth/updateNoteByCollaborator',
             [
-                "note_id" => "3",
+                "note_id" => "5",
                 "title" => "update title",
                 "description" => "update desc",
             ]
@@ -82,7 +82,7 @@ class collaboratorControllerTest extends TestCase
     {
         $response = $this->withHeaders([
             'Content-Type' => 'Application/json',
-            'Authorization' => 'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOlwvXC8xMjcuMC4wLjE6ODAwMFwvYXBpXC9hdXRoXC9sb2dpbiIsImlhdCI6MTY0NDA0NDI5OSwiZXhwIjoxNjQ0MDQ3ODk5LCJuYmYiOjE2NDQwNDQyOTksImp0aSI6IlVpMjlFbUoyNzBOR3JvWlYiLCJzdWIiOjEsInBydiI6IjIzYmQ1Yzg5NDlmNjAwYWRiMzllNzAxYzQwMDg3MmRiN2E1OTc2ZjcifQ.DA0vqFJDJHlKBZxc12glxdriXKgMv77zZjxCyBV0BB4'
+            'Authorization' => 'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOlwvXC8xMjcuMC4wLjE6ODAwMFwvYXBpXC9hdXRoXC9sb2dpbiIsImlhdCI6MTY0ODM3NDY5MSwiZXhwIjoxNjQ4Mzc4MjkxLCJuYmYiOjE2NDgzNzQ2OTEsImp0aSI6IlIyMER1a08yOE9taFRiYXUiLCJzdWIiOjEsInBydiI6IjIzYmQ1Yzg5NDlmNjAwYWRiMzllNzAxYzQwMDg3MmRiN2E1OTc2ZjcifQ.gqwtX02PNiRYqNjCVNneWp1CtvW0fCNLndNj0jxuLH0'
         ])->json(
             'POST',
             '/api/auth/updateNoteByCollaborator',
@@ -92,7 +92,7 @@ class collaboratorControllerTest extends TestCase
                 "description" => "update desc",
             ]
         );
-        $response->assertStatus(404)->assertJson(['message' => 'Collaborator Email not registered']);
+        $response->assertStatus(404)->assertJson(['message' => 'note_id is not correct']);
     }
 
         /**
@@ -104,12 +104,12 @@ class collaboratorControllerTest extends TestCase
     {
         $response = $this->withHeaders([
             'Content-Type' => 'Application/json',
-            'Authorization' => 'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOlwvXC8xMjcuMC4wLjE6ODAwMFwvYXBpXC9hdXRoXC9sb2dpbiIsImlhdCI6MTY0NDA0NDI5OSwiZXhwIjoxNjQ0MDQ3ODk5LCJuYmYiOjE2NDQwNDQyOTksImp0aSI6IlVpMjlFbUoyNzBOR3JvWlYiLCJzdWIiOjEsInBydiI6IjIzYmQ1Yzg5NDlmNjAwYWRiMzllNzAxYzQwMDg3MmRiN2E1OTc2ZjcifQ.DA0vqFJDJHlKBZxc12glxdriXKgMv77zZjxCyBV0BB4'
+            'Authorization' => 'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOlwvXC8xMjcuMC4wLjE6ODAwMFwvYXBpXC9hdXRoXC9sb2dpbiIsImlhdCI6MTY0ODM3NDY5MSwiZXhwIjoxNjQ4Mzc4MjkxLCJuYmYiOjE2NDgzNzQ2OTEsImp0aSI6IlIyMER1a08yOE9taFRiYXUiLCJzdWIiOjEsInBydiI6IjIzYmQ1Yzg5NDlmNjAwYWRiMzllNzAxYzQwMDg3MmRiN2E1OTc2ZjcifQ.gqwtX02PNiRYqNjCVNneWp1CtvW0fCNLndNj0jxuLH0'
         ])->json(
             'POST',
             '/api/auth/removeCollaborator',
             [
-                "note_id" => "2",
+                "note_id" => "5",
                 "email" => "nadeemshaikh1171998@gmail.com",
             ]
         );
@@ -124,16 +124,16 @@ class collaboratorControllerTest extends TestCase
     {
         $response = $this->withHeaders([
             'Content-Type' => 'Application/json',
-            'Authorization' => 'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOlwvXC8xMjcuMC4wLjE6ODAwMFwvYXBpXC9hdXRoXC9sb2dpbiIsImlhdCI6MTY0NDA0NDI5OSwiZXhwIjoxNjQ0MDQ3ODk5LCJuYmYiOjE2NDQwNDQyOTksImp0aSI6IlVpMjlFbUoyNzBOR3JvWlYiLCJzdWIiOjEsInBydiI6IjIzYmQ1Yzg5NDlmNjAwYWRiMzllNzAxYzQwMDg3MmRiN2E1OTc2ZjcifQ.DA0vqFJDJHlKBZxc12glxdriXKgMv77zZjxCyBV0BB4'
+            'Authorization' => 'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOlwvXC8xMjcuMC4wLjE6ODAwMFwvYXBpXC9hdXRoXC9sb2dpbiIsImlhdCI6MTY0ODM3NDY5MSwiZXhwIjoxNjQ4Mzc4MjkxLCJuYmYiOjE2NDgzNzQ2OTEsImp0aSI6IlIyMER1a08yOE9taFRiYXUiLCJzdWIiOjEsInBydiI6IjIzYmQ1Yzg5NDlmNjAwYWRiMzllNzAxYzQwMDg3MmRiN2E1OTc2ZjcifQ.gqwtX02PNiRYqNjCVNneWp1CtvW0fCNLndNj0jxuLH0'
         ])->json(
             'POST',
             '/api/auth/removeCollaborator',
             [
-                "note_id" => "2",
+                "note_id" => "5",
                 "email" => "nadeemshaikh1171998@gmail.com",
             ]
         );
-        $response->assertStatus(404)->assertJson(['message' => 'Collaborator could not deleted']);
+        $response->assertStatus(404)->assertJson(['message' => 'Collaborater Not created']);
     }
 }
 

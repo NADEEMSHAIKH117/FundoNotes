@@ -7,9 +7,11 @@ use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 use App\Models\User;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Log;
-
+use Illuminate\Support\Facades\Storage;
+use Tymon\JWTAuth\Facades\JWTAuth;
 
 /* 
  * This controller is for user registration, login, logout
@@ -206,6 +208,87 @@ class UserController extends Controller
         return response()->json([
             'message' => 'User successfully logget out',
         ], 201);
+    }
+
+    /**
+     * This function will take image
+     * as input and save in AWS S3
+     * and will save link in database
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function addProfileImage(Request $request)
+    {
+        $request->validate([
+
+            'image' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+
+        ]);
+        $user = Auth::user();
+
+        $user = User::where('email', $user->email)->first();
+        if ($user) {
+
+            $path = Storage::disk('s3')->put('images', $request->image);
+            $url = env('AWS_URL') . $path;
+            User::where('email', $user->email)
+                ->update(['profilepic' => $url]);
+            return response()->json(['message' => 'Profilepic Successsfully Added', 'URL' => $url], 201);
+        } else {
+            return response()->json(['message' => 'We cannot find a user'], 400);
+        }
+    }
+
+    public function updateProfileImage(Request $request)
+    { {
+            $request->validate([
+
+                'image' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+
+            ]);
+            $user = JWTAuth::user();
+
+            $user = User::where('email', $user->email)->first();
+            if ($user) {
+                $profile_pic = $user->profilepic;
+                if ($request->image) {
+                    $path = str_replace(env('AWS_URL'), '', $user->profilepic);
+
+                    if (Storage::disk('s3')->exists($path)) {
+                        Storage::disk('s3')->delete($path);
+                    }
+                    $path = Storage::disk('s3')->put('images', $request->image);
+                    $pathurl = env('AWS_URL') . $path;
+                    $user->profilepic = $pathurl;
+                    $user->save();
+                }
+                return response()->json([
+                    'piv' => $profile_pic,
+                    'message' => 'Profilepic Successsfully update', 'URL' => $pathurl
+                ], 201);
+            } else {
+                return response()->json(['message' => 'We cannot find a user'], 400);
+            }
+        }
+    }
+
+    public function deleteProfileImage()
+    {
+        $user = JWTAuth::user();
+
+        $user = User::where('email', $user->email)->first();
+        if ($user) {
+            $path = str_replace(env('AWS_URL'), '', $user->profilepic);
+
+            if (Storage::disk('s3')->exists($path)) {
+                Storage::disk('s3')->delete($path);
+            }
+            // $user->delete();
+            return response()->json([
+                'message' => 'Profilepic Deleted Successsfully '
+            ], 201);
+        } else {
+            return response()->json(['message' => 'We cannot find a user'], 400);
+        }
     }
 
     /**

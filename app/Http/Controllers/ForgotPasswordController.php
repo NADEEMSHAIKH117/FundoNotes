@@ -34,7 +34,7 @@ class ForgotPasswordController extends Controller
      *        ),
      *    ),
      *   @OA\Response(response=201, description="password reset link genereted in mail"),
-     *   @OA\Response(response=404, description="we can not find a user with that email address"),
+     *   @OA\Response(response=200, description="we can not find a user with that email address"),
      *   security={
      *       {"Bearer": {}}
      *     }
@@ -64,7 +64,7 @@ class ForgotPasswordController extends Controller
 
             if (!$user)
             {
-                throw new FundoNoteException("we can not find a user with that email address", 404);
+                throw new FundoNoteException("we can not find a user with that email address", 200);
             }
 
             $token = Auth::fromUser($user);
@@ -76,7 +76,7 @@ class ForgotPasswordController extends Controller
             }
 
             return response()->json([
-                'status' => 200,
+                'status' => 201,
                 'message' => 'password reset link genereted in mail'
             ],200);
         } catch (FundoNoteException $exception) {

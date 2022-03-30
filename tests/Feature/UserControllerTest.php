@@ -98,7 +98,7 @@ class UserControllerTest extends TestCase
     {
         $response = $this->withHeaders([
             'Content-Type' => 'Application/json',
-            'Authorization' => 'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOlwvXC8xMjcuMC4wLjE6ODAwMFwvYXBpXC9hdXRoXC9sb2dpbiIsImlhdCI6MTY0NzIwMDc3MiwiZXhwIjoxNjQ3MjA0MzcyLCJuYmYiOjE2NDcyMDA3NzIsImp0aSI6Iml1R0RpS2I5a3MwTXp6VloiLCJzdWIiOjEsInBydiI6IjIzYmQ1Yzg5NDlmNjAwYWRiMzllNzAxYzQwMDg3MmRiN2E1OTc2ZjcifQ.xsTmrHD7o7ZZ6TIv4B9DGeo1gkRqaVoBnWCmvROUSgM'
+            'Authorization' => 'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOlwvXC8xMjcuMC4wLjE6ODAwMFwvYXBpXC9hdXRoXC9sb2dpbiIsImlhdCI6MTY0ODM2NjYxNSwiZXhwIjoxNjQ4MzcwMjE1LCJuYmYiOjE2NDgzNjY2MTUsImp0aSI6IlRPODZYM1VjcXpoTUNwMFIiLCJzdWIiOjEsInBydiI6IjIzYmQ1Yzg5NDlmNjAwYWRiMzllNzAxYzQwMDg3MmRiN2E1OTc2ZjcifQ.Ag8LyZ7vC5T9yjrjecWJebHJ8U657aOsRGIHvvP2a_0'
         ])->json('POST', '/api/auth/logout');
         $response->assertStatus(201)->assertJson(['message' => 'User successfully logget out']);
     }
@@ -118,21 +118,7 @@ class UserControllerTest extends TestCase
             $response->assertStatus(200)->assertJson(['message' => 'password reset link genereted in mail']);
         }
     }
-    /**
-     * @test for
-     * UnSuccessfull forgotpassword
-     */
-    public function test_IfGiven_InvalidEmailId()
-    { {
-            $response = $this->withHeaders([
-                'Content-Type' => 'Application/json',
-            ])->json('POST', '/api/auth/forgotpassword', [
-                "email" => "nadeem420@gmail.com"
-            ]);
 
-            $response->assertStatus(404)->assertJson(['message' => 'we can not find a user with that email address']);
-        }
-    }
     /**
      * @test for
      * Successfull resetpassword
@@ -143,11 +129,11 @@ class UserControllerTest extends TestCase
                 'Content-Type' => 'Application/json',
             ])->json('POST', '/api/auth/resetpassword', [
                 "new_password" => "nadeem123",
-                "confirm_password" => "nadeem123",
-                "token" => "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOlwvXC9sb2NhbGhvc3RcL2FwaVwvYXV0aFwvZm9yZ290cGFzc3dvcmQiLCJpYXQiOjE2NDcyMDE5NzEsImV4cCI6MTY0NzIwNTU3MSwibmJmIjoxNjQ3MjAxOTcxLCJqdGkiOiJJeFpxUWZrbzNYRTY1QWU2Iiwic3ViIjoxLCJwcnYiOiIyM2JkNWM4OTQ5ZjYwMGFkYjM5ZTcwMWM0MDA4NzJkYjdhNTk3NmY3In0.FQiX58aiJWyW3ttPJGkhf-NR9m3fHOiUMlABoYXLX5o"
+                "password_confirmation" => "nadeem123",
+                "token" => 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOlwvXC8xMjcuMC4wLjE6ODAwMFwvYXBpXC9hdXRoXC9mb3Jnb3RwYXNzd29yZCIsImlhdCI6MTY0ODM2ODExOSwiZXhwIjoxNjQ4MzcxNzE5LCJuYmYiOjE2NDgzNjgxMTksImp0aSI6IkxKMkhpNkVUbWcxakZpQUkiLCJzdWIiOjEsInBydiI6IjIzYmQ1Yzg5NDlmNjAwYWRiMzllNzAxYzQwMDg3MmRiN2E1OTc2ZjcifQ.63RMYVCws7Nuy2rU5IowM7Je3kM0nPaRmYYZpevuwnk'
             ]);
 
-            $response->assertStatus(201)->assertJson(['message' => 'Password reset successfull!']);
+            $response->assertStatus(200)->assertJson(['message' => 'Password reset successfull!']);
         }
     }
 }

@@ -26,6 +26,9 @@ Route::group([
     Route::post('/login',[UserController::class,'login']);
     Route::get('/userProfile',[UserController::class,'userProfile']);
     Route::post('/logout',[UserController::class,'logout']);
+    Route::post('/addProfileImage',[UserController::class,'addProfileImage']);
+    Route::post('/updateProfileImage',[UserController::class,'updateProfileImage']);
+    route::delete('/deleteProfileImage',[UserController::class,'deleteProfileImage']);
     
     Route::post('forgotpassword', [ForgotPasswordController::class, 'forgotPassword']);
     Route::post('resetpassword', [ForgotPasswordController::class, 'resetpassword']);

@@ -17,7 +17,7 @@ class LabelControllerTest extends TestCase
     {
         $response = $this->withHeaders([
             'Content-Type' => 'Application/json',
-            'Authorization' => 'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOlwvXC8xMjcuMC4wLjE6ODAwMFwvYXBpXC9hdXRoXC9sb2dpbiIsImlhdCI6MTY0Nzc5MDE0NiwiZXhwIjoxNjQ3NzkzNzQ2LCJuYmYiOjE2NDc3OTAxNDYsImp0aSI6ImhpY0ZZZmZBR0NYU0hoOHgiLCJzdWIiOjEsInBydiI6IjIzYmQ1Yzg5NDlmNjAwYWRiMzllNzAxYzQwMDg3MmRiN2E1OTc2ZjcifQ.R3LIHupsDh035fsHOOEyA5PFxrkpnD9QWtqBvnT9Y-4'
+            'Authorization' => 'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOlwvXC8xMjcuMC4wLjE6ODAwMFwvYXBpXC9hdXRoXC9sb2dpbiIsImlhdCI6MTY0ODM3MjE5NCwiZXhwIjoxNjQ4Mzc1Nzk0LCJuYmYiOjE2NDgzNzIxOTQsImp0aSI6InVkVm54cU9oSHh0ck83VkciLCJzdWIiOjEsInBydiI6IjIzYmQ1Yzg5NDlmNjAwYWRiMzllNzAxYzQwMDg3MmRiN2E1OTc2ZjcifQ.gIirND0vl62hejSUoRCnGSaD9f1cskUd2Qm-d3XmEFQ'
         ])->json(
             'POST',
             '/api/auth/createLabel',
@@ -29,32 +29,15 @@ class LabelControllerTest extends TestCase
         $response->assertStatus(201)->assertJson(['message' => 'Label added Sucessfully']);
     }
 
-    //create label Error
-    public function test_IfGiven_LabelName_ShouldValidate_AndReturnErrorsStatus()
-    {
-        $response = $this->withHeaders([
-            'Content-Type' => 'Application/json',
-            'Authorization' => 'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOlwvXC8xMjcuMC4wLjE6ODAwMFwvYXBpXC9sb2dpbiIsImlhdCI6MTY0MjA0NzY3NywiZXhwIjoxNjQyMDUxMjc3LCJuYmYiOjE2NDIwNDc2NzcsImp0aSI6IlVzRXNPbG5LZDFRYk55ZUEiLCJzdWIiOjksInBydiI6IjIzYmQ1Yzg5NDlmNjAwYWRiMzllNzAxYzQwMDg3MmRiN2E1OTc2ZjcifQ.JBmXbrnLVPErwkeLmiF2G3JBNIh1Odyx3CHD8aTzZU0'
-        ])->json(
-            'POST',
-            '/api/auth/createLabel',
-            [
-                "labelname" => "new label",
-            ]
-        );
-
-        $response->assertStatus(401)->assertJson(['message' => 'Label Name already exists']);
-    }
-
     //read all labels success
     public function test_IfGiven_AuthorisedToken_AndReturnAllLabels_SuccessStatus()
     {
         $response = $this->withHeaders([
             'Content-Type' => 'Application/json',
-            'Authorization' => 'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOlwvXC8xMjcuMC4wLjE6ODAwMFwvYXBpXC9sb2dpbiIsImlhdCI6MTY0MjA0NzY3NywiZXhwIjoxNjQyMDUxMjc3LCJuYmYiOjE2NDIwNDc2NzcsImp0aSI6IlVzRXNPbG5LZDFRYk55ZUEiLCJzdWIiOjksInBydiI6IjIzYmQ1Yzg5NDlmNjAwYWRiMzllNzAxYzQwMDg3MmRiN2E1OTc2ZjcifQ.JBmXbrnLVPErwkeLmiF2G3JBNIh1Odyx3CHD8aTzZU0'
+            'Authorization' => 'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOlwvXC8xMjcuMC4wLjE6ODAwMFwvYXBpXC9hdXRoXC9sb2dpbiIsImlhdCI6MTY0ODM3MjE5NCwiZXhwIjoxNjQ4Mzc1Nzk0LCJuYmYiOjE2NDgzNzIxOTQsImp0aSI6InVkVm54cU9oSHh0ck83VkciLCJzdWIiOjEsInBydiI6IjIzYmQ1Yzg5NDlmNjAwYWRiMzllNzAxYzQwMDg3MmRiN2E1OTc2ZjcifQ.gIirND0vl62hejSUoRCnGSaD9f1cskUd2Qm-d3XmEFQ'
         ])->json('GET', '/api/auth/displayLabelById');
 
-        $response->assertStatus(201)->assertJson(['message' => 'Labels Fetched  Successfully']);
+        $response->assertStatus(200)->assertJson(['message' => 'All Labels are Fetched Successfully']);
     }
 
     //read all labels error
@@ -62,7 +45,7 @@ class LabelControllerTest extends TestCase
     {
         $response = $this->withHeaders([
             'Content-Type' => 'Application/json',
-            'Authorization' => 'Bearer J0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOlwvXC8xMjcuMC4wLjE6ODAwMFwvYXBpXC9sb2dpbiIsImlhdCI6MTY0MjA0NzY3NywiZXhwIjoxNjQyMDUxMjc3LCJuYmYiOjE2NDIwNDc2NzcsImp0aSI6IlVzRXNPbG5LZDFRYk55ZUEiLCJzdWIiOjksInBydiI6IjIzYmQ1Yzg5NDlmNjAwYWRiMzllNzAxYzQwMDg3MmRiN2E1OTc2ZjcifQ.JBmXbrnLVPErwkeLmiF2G3JBNIh1Odyx3CHD8aTzZU0'
+            'Authorization' => 'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOlwvXC8xMjcuMC4wLjE6ODAwMFwvYXBpXC9hdXRoXC9sb2dpbiIsImlhdCI6MTY0ODM3MzE3MywiZXhwIjoxNjQ4Mzc2NzczLCJuYmYiOjE2NDgzNzMxNzMsImp0aSI6IkVYZUl6Mk52cmF3aFVaTmgiLCJzdWIiOjUsInBydiI6IjIzYmQ1Yzg5NDlmNjAwYWRiMzllNzAxYzQwMDg3MmRiN2E1OTc2ZjcifQ.6UBK-ghUL2sl7uOQ3oZGr0yTYlxemJQq3U4-HuYFeK4'
         ])->json('GET', '/api/auth/displayLabelById');
 
         $response->assertStatus(404)->assertJson(['message' => 'Invalid authorization token']);
@@ -73,7 +56,7 @@ class LabelControllerTest extends TestCase
     {
         $response = $this->withHeaders([
             'Content-Type' => 'Application/json',
-            'Authorization' => 'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOlwvXC8xMjcuMC4wLjE6ODAwMFwvYXBpXC9sb2dpbiIsImlhdCI6MTY0MjA0NzY3NywiZXhwIjoxNjQyMDUxMjc3LCJuYmYiOjE2NDIwNDc2NzcsImp0aSI6IlVzRXNPbG5LZDFRYk55ZUEiLCJzdWIiOjksInBydiI6IjIzYmQ1Yzg5NDlmNjAwYWRiMzllNzAxYzQwMDg3MmRiN2E1OTc2ZjcifQ.JBmXbrnLVPErwkeLmiF2G3JBNIh1Odyx3CHD8aTzZU0'
+            'Authorization' => 'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOlwvXC8xMjcuMC4wLjE6ODAwMFwvYXBpXC9hdXRoXC9sb2dpbiIsImlhdCI6MTY0ODM3MjE5NCwiZXhwIjoxNjQ4Mzc1Nzk0LCJuYmYiOjE2NDgzNzIxOTQsImp0aSI6InVkVm54cU9oSHh0ck83VkciLCJzdWIiOjEsInBydiI6IjIzYmQ1Yzg5NDlmNjAwYWRiMzllNzAxYzQwMDg3MmRiN2E1OTc2ZjcifQ.gIirND0vl62hejSUoRCnGSaD9f1cskUd2Qm-d3XmEFQ'
         ])->json(
             'POST',
             '/api/auth/updateLabelById',
@@ -83,7 +66,7 @@ class LabelControllerTest extends TestCase
             ]
         );
 
-        $response->assertStatus(201)->assertJson(['message' => 'Label updated Sucessfully']);
+        $response->assertStatus(200)->assertJson(['message' => 'Label updated Sucessfully']);
     }
 
     //label update error
@@ -91,7 +74,7 @@ class LabelControllerTest extends TestCase
     {
         $response = $this->withHeaders([
             'Content-Type' => 'Application/json',
-            'Authorization' => 'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOlwvXC8xMjcuMC4wLjE6ODAwMFwvYXBpXC9sb2dpbiIsImlhdCI6MTY0MjA0NzY3NywiZXhwIjoxNjQyMDUxMjc3LCJuYmYiOjE2NDIwNDc2NzcsImp0aSI6IlVzRXNPbG5LZDFRYk55ZUEiLCJzdWIiOjksInBydiI6IjIzYmQ1Yzg5NDlmNjAwYWRiMzllNzAxYzQwMDg3MmRiN2E1OTc2ZjcifQ.JBmXbrnLVPErwkeLmiF2G3JBNIh1Odyx3CHD8aTzZU0'
+            'Authorization' => 'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOlwvXC8xMjcuMC4wLjE6ODAwMFwvYXBpXC9hdXRoXC9sb2dpbiIsImlhdCI6MTY0ODM3MjE5NCwiZXhwIjoxNjQ4Mzc1Nzk0LCJuYmYiOjE2NDgzNzIxOTQsImp0aSI6InVkVm54cU9oSHh0ck83VkciLCJzdWIiOjEsInBydiI6IjIzYmQ1Yzg5NDlmNjAwYWRiMzllNzAxYzQwMDg3MmRiN2E1OTc2ZjcifQ.gIirND0vl62hejSUoRCnGSaD9f1cskUd2Qm-d3XmEFQ'
         ])->json(
             'POST',
             '/api/auth/updateLabelById',
@@ -109,16 +92,16 @@ class LabelControllerTest extends TestCase
     {
         $response = $this->withHeaders([
             'Content-Type' => 'Application/json',
-            'Authorization' => 'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOlwvXC8xMjcuMC4wLjE6ODAwMFwvYXBpXC9sb2dpbiIsImlhdCI6MTY0MjA0NzY3NywiZXhwIjoxNjQyMDUxMjc3LCJuYmYiOjE2NDIwNDc2NzcsImp0aSI6IlVzRXNPbG5LZDFRYk55ZUEiLCJzdWIiOjksInBydiI6IjIzYmQ1Yzg5NDlmNjAwYWRiMzllNzAxYzQwMDg3MmRiN2E1OTc2ZjcifQ.JBmXbrnLVPErwkeLmiF2G3JBNIh1Odyx3CHD8aTzZU0'
+            'Authorization' => 'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOlwvXC8xMjcuMC4wLjE6ODAwMFwvYXBpXC9hdXRoXC9sb2dpbiIsImlhdCI6MTY0ODM3MjE5NCwiZXhwIjoxNjQ4Mzc1Nzk0LCJuYmYiOjE2NDgzNzIxOTQsImp0aSI6InVkVm54cU9oSHh0ck83VkciLCJzdWIiOjEsInBydiI6IjIzYmQ1Yzg5NDlmNjAwYWRiMzllNzAxYzQwMDg3MmRiN2E1OTc2ZjcifQ.gIirND0vl62hejSUoRCnGSaD9f1cskUd2Qm-d3XmEFQ'
         ])->json(
             'POST',
             '/api/auth/deleteLabelById',
             [
-                "id" => 2,
+                "id" => 1,
             ]
         );
 
-        $response->assertStatus(201)->assertJson(['message' => 'Label successfully deleted']);
+        $response->assertStatus(201)->assertJson(['message' => 'Label deleted Successfully']);
     }
 
     //delete error
@@ -126,7 +109,7 @@ class LabelControllerTest extends TestCase
     {
         $response = $this->withHeaders([
             'Content-Type' => 'Application/json',
-            'Authorization' => 'Bearer J0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOlwvXC8xMjcuMC4wLjE6ODAwMFwvYXBpXC9sb2dpbiIsImlhdCI6MTY0MjA0NzY3NywiZXhwIjoxNjQyMDUxMjc3LCJuYmYiOjE2NDIwNDc2NzcsImp0aSI6IlVzRXNPbG5LZDFRYk55ZUEiLCJzdWIiOjksInBydiI6IjIzYmQ1Yzg5NDlmNjAwYWRiMzllNzAxYzQwMDg3MmRiN2E1OTc2ZjcifQ.JBmXbrnLVPErwkeLmiF2G3JBNIh1Odyx3CHD8aTzZU0'
+            'Authorization' => 'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOlwvXC8xMjcuMC4wLjE6ODAwMFwvYXBpXC9hdXRoXC9sb2dpbiIsImlhdCI6MTY0ODM3MjE5NCwiZXhwIjoxNjQ4Mzc1Nzk0LCJuYmYiOjE2NDgzNzIxOTQsImp0aSI6InVkVm54cU9oSHh0ck83VkciLCJzdWIiOjEsInBydiI6IjIzYmQ1Yzg5NDlmNjAwYWRiMzllNzAxYzQwMDg3MmRiN2E1OTc2ZjcifQ.gIirND0vl62hejSUoRCnGSaD9f1cskUd2Qm-d3XmEFQ'
         ])->json(
             'POST',
             '/api/auth/deleteLabelById',

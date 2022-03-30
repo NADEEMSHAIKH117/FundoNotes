@@ -103,15 +103,27 @@ class LabelController extends Controller
     public function displayLabelById()
     {
         $user = JWTAuth::parseToken()->authenticate();
-        $labels = Label::where('user_id', '=', $user->id)->get();
-        if ($labels == '') {
-            return response()->json(['message' => 'Label not Found'], 404);
+        if (!$user) {
+            return response()->json([
+                'status' => 404,
+                'message' => 'Invalid authorization token'
+            ], 404);
         }
-        $paginate = Label::paginate(3);
+
+        $label = Label::where('user_id', Auth::user()->id)->get();
+
+        if (!$label) {
+            return response()->json([
+                'status' => 404,
+                'message' => 'Notes not found'
+            ], 401);
+        }
+
         return response()->json([
-            'message' => 'All Labels are Fetched Successfully',
-            'label' => $paginate
-        ], 200);
+            'status' => 201,
+            'message' => 'Labels Fetched  Successfully',
+            'Label' => $label
+        ], 201);
     }
 
     /**
@@ -294,6 +306,7 @@ class LabelController extends Controller
 
         if ($user) {
             $labelnote = LabelNotes::where('note_id', $request->note_id)->where('label_id', $request->label_id)->first();
+            // return $labelnote;
             if ($labelnote) {
                 return response()->json([
                     'status' => 409,
@@ -304,6 +317,7 @@ class LabelController extends Controller
             $labelnotes = new LabelNotes();
             $labelnotes->label_id = $request->label_id;
             $labelnotes->note_id = $request->note_id;
+            // return $labelnotes;
             if ($user->label_notes()->save($labelnotes)) {
                 Cache::forget('notes');
                 return response()->json([

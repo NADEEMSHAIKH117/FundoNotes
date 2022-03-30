@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Exceptions\FundoNoteException;
+use App\Models\LabelNotes;
 use App\Models\Notes;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
@@ -88,6 +89,11 @@ class NotesController extends Controller
         } else {
             $colour = $request->input('colour');
         }
+        // if (($request->has('label_id')) == null) {
+        //     $label_id = 0;
+        // } else {
+        //     $label_id = $request->input('label_id');
+        // }
         try {
             $note = new Notes;
             $note->title = $request->input('title');
@@ -95,11 +101,25 @@ class NotesController extends Controller
             $note->pin = $pin;
             $note->archive = $archive;
             $note->colour = $colour;
-            $colour_name = strtolower($request->colour);
+            // $note->label_id = $label_id;
 
+            // if ($label_id) {
+            //     $label_id = LabelNotes::where('label_id', $request->label_id)->first();
+
+            //     if ($label_id) {
+            //         return response()->json([
+            //             'status' => 409,
+            //             'message' => 'Note Already have a label'
+            //         ], 409);
+            //     }
+            //     return $label_id;
+            // }
+
+            $colour_name = strtolower($request->colour);
             if (isset(NotesController::$colours[$colour_name])) {
                 $note->colour = NotesController::$colours[$colour_name];
             }
+
             $note->user_id = Auth::user()->id;
             $note->save();
             if (!$note) {
@@ -158,7 +178,7 @@ class NotesController extends Controller
             return response()->json([
                 'status' => 201,
                 'message' => 'Fetched Notes Successfully',
-                 $notes->getAllNotes($user)
+                'Note' => $notes->getAllNotes($user)
             ], 201);
 
             if (!$notes) {
@@ -217,7 +237,7 @@ class NotesController extends Controller
             $id = $request->input('id');
             $currentUser = JWTAuth::parseToken()->authenticate();
             $note = $currentUser->notes()->find($id);
-            $value = Cache::remember('notes', 3600, function () {
+            Cache::remember('notes', 3600, function () {
                 return DB::table('notes')->get();
             });
 
@@ -225,15 +245,15 @@ class NotesController extends Controller
                 Log::error('Notes Not Found', ['id' => $request->id]);
                 return response()->json(['message' => 'Notes not Found'], 404);
             }
-    
+
             $note->fill($request->all());
-            
+
             $colour_name = strtolower($request->colour);
 
             if (isset(NotesController::$colours[$colour_name])) {
                 $note->colour = NotesController::$colours[$colour_name];
             }
-                $note->user_id = Auth::user()->id;
+            $note->user_id = Auth::user()->id;
 
             if ($note->save()) {
                 Log::info('notes updated', ['user_id' => $currentUser, 'note_id' => $request->id]);
@@ -411,7 +431,7 @@ class NotesController extends Controller
                 return response()->json(
                     [
                         'message' => 'Fetched Pinned Notes Successfully',
-                         $usernotes->getAllPinNotes($currentUser)
+                        $usernotes->getAllPinNotes($currentUser)
                     ],
                     201
                 );

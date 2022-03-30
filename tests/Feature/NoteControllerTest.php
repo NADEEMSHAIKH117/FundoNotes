@@ -16,7 +16,7 @@ class NoteControllerTest extends TestCase
     {
         $response = $this->withHeaders([
             'Content-Type' => 'Application/json',
-            'Authorization' => 'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOlwvXC8xMjcuMC4wLjE6ODAwMFwvYXBpXC9hdXRoXC9sb2dpbiIsImlhdCI6MTY0NzIwNTM3MiwiZXhwIjoxNjQ3MjA4OTcyLCJuYmYiOjE2NDcyMDUzNzIsImp0aSI6ImVZOWhTZjFMZWVzTWFjQm4iLCJzdWIiOjEsInBydiI6IjIzYmQ1Yzg5NDlmNjAwYWRiMzllNzAxYzQwMDg3MmRiN2E1OTc2ZjcifQ.e7mdd_8o6qQCJzdnpGlSGy7ZEr6L8pEhOmABLsj-gxQ'
+            'Authorization' => 'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOlwvXC8xMjcuMC4wLjE6ODAwMFwvYXBpXC9hdXRoXC9sb2dpbiIsImlhdCI6MTY0ODM2ODcyNSwiZXhwIjoxNjQ4MzcyMzI1LCJuYmYiOjE2NDgzNjg3MjUsImp0aSI6IjNEM3NIaElOdUU5QmlOaGYiLCJzdWIiOjEsInBydiI6IjIzYmQ1Yzg5NDlmNjAwYWRiMzllNzAxYzQwMDg3MmRiN2E1OTc2ZjcifQ.-1NwGP3RoYpk7ut04Ha43sOcaeY774PQV50-Yhcsw1Q'
         ])->json(
             'POST',
             '/api/auth/createNotes',
@@ -37,17 +37,17 @@ class NoteControllerTest extends TestCase
     {
         $response = $this->withHeaders([
             'Content-Type' => 'Application/json',
-            'Authorization' => 'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOlwvXC8xMjcuMC4wLjE6ODAwMFwvYXBpXC9hdXRoXC9sb2dpbiIsImlhdCI6MTY0NzIwNjQ0NSwiZXhwIjoxNjQ3MjEwMDQ1LCJuYmYiOjE2NDcyMDY0NDUsImp0aSI6ImhlNko0eFhSNVpIdlBtMjYiLCJzdWIiOjEsInBydiI6IjIzYmQ1Yzg5NDlmNjAwYWRiMzllNzAxYzQwMDg3MmRiN2E1OTc2ZjcifQ.qvlE8YaxaPQx91WGbYzBk3R_rTXWmqbfdWuRHBV1Y9k'
+            'Authorization' => 'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOlwvXC8xMjcuMC4wLjE6ODAwMFwvYXBpXC9hdXRoXC9sb2dpbiIsImlhdCI6MTY0ODM2ODcyNSwiZXhwIjoxNjQ4MzcyMzI1LCJuYmYiOjE2NDgzNjg3MjUsImp0aSI6IjNEM3NIaElOdUU5QmlOaGYiLCJzdWIiOjEsInBydiI6IjIzYmQ1Yzg5NDlmNjAwYWRiMzllNzAxYzQwMDg3MmRiN2E1OTc2ZjcifQ.-1NwGP3RoYpk7ut04Ha43sOcaeY774PQV50-Yhcsw1Q'
         ])->json(
             'POST',
             '/api/auth/updateNoteById',
             [
-                "id" => "1",
+                "id" => "2",
                 "title" => "updated title",
                 "description" => "updated description",
             ]
         );
-        $response->assertStatus(201)->assertJson(['message' => 'Note updated Successfully']);
+        $response->assertStatus(200)->assertJson(['message' => 'Note updated Successfully']);
     }
 
     /**
@@ -59,12 +59,12 @@ class NoteControllerTest extends TestCase
     {
         $response = $this->withHeaders([
             'Content-Type' => 'Application/json',
-            'Authorization' => 'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOlwvXC8xMjcuMC4wLjE6ODAwMFwvYXBpXC9hdXRoXC9sb2dpbiIsImlhdCI6MTY0NzIwNjQ0NSwiZXhwIjoxNjQ3MjEwMDQ1LCJuYmYiOjE2NDcyMDY0NDUsImp0aSI6ImhlNko0eFhSNVpIdlBtMjYiLCJzdWIiOjEsInBydiI6IjIzYmQ1Yzg5NDlmNjAwYWRiMzllNzAxYzQwMDg3MmRiN2E1OTc2ZjcifQ.qvlE8YaxaPQx91WGbYzBk3R_rTXWmqbfdWuRHBV1Y9k'
+            'Authorization' => 'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOlwvXC8xMjcuMC4wLjE6ODAwMFwvYXBpXC9hdXRoXC9sb2dpbiIsImlhdCI6MTY0ODM2ODcyNSwiZXhwIjoxNjQ4MzcyMzI1LCJuYmYiOjE2NDgzNjg3MjUsImp0aSI6IjNEM3NIaElOdUU5QmlOaGYiLCJzdWIiOjEsInBydiI6IjIzYmQ1Yzg5NDlmNjAwYWRiMzllNzAxYzQwMDg3MmRiN2E1OTc2ZjcifQ.-1NwGP3RoYpk7ut04Ha43sOcaeY774PQV50-Yhcsw1Q'
         ])->json(
             'POST',
             '/api/auth/updateNoteById',
             [
-                "id" => "12",
+                "id" => "1",
                 "title" => "title Test",
                 "description" => "description Test",
             ]
@@ -80,15 +80,15 @@ class NoteControllerTest extends TestCase
     {
         $response = $this->withHeaders([
             'Content-Type' => 'Application/json',
-            'Authorization' => 'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOlwvXC8xMjcuMC4wLjE6ODAwMFwvYXBpXC9hdXRoXC9sb2dpbiIsImlhdCI6MTY0NzIwNzA5NSwiZXhwIjoxNjQ3MjEwNjk1LCJuYmYiOjE2NDcyMDcwOTUsImp0aSI6IlVqeDhMdnNweFd0dXoxZlciLCJzdWIiOjEsInBydiI6IjIzYmQ1Yzg5NDlmNjAwYWRiMzllNzAxYzQwMDg3MmRiN2E1OTc2ZjcifQ.tfRqoYVQ8HC3L5PLk9g1rXKyNGsWYQWV5k0d0KUoiyE'
+            'Authorization' => 'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOlwvXC8xMjcuMC4wLjE6ODAwMFwvYXBpXC9hdXRoXC9sb2dpbiIsImlhdCI6MTY0ODM2ODcyNSwiZXhwIjoxNjQ4MzcyMzI1LCJuYmYiOjE2NDgzNjg3MjUsImp0aSI6IjNEM3NIaElOdUU5QmlOaGYiLCJzdWIiOjEsInBydiI6IjIzYmQ1Yzg5NDlmNjAwYWRiMzllNzAxYzQwMDg3MmRiN2E1OTc2ZjcifQ.-1NwGP3RoYpk7ut04Ha43sOcaeY774PQV50-Yhcsw1Q'
         ])->json(
             'POST',
             '/api/auth/deleteNoteById',
             [
-                "id" => "6"
+                "id" => "12"
             ]
         );
-        $response->assertStatus(201)->assertJson(['message' => 'Note deleted Successfully']);
+        $response->assertStatus(200)->assertJson(['message' => 'Note deleted Successfully']);
     }
 
     /**
@@ -99,7 +99,7 @@ class NoteControllerTest extends TestCase
     {
         $response = $this->withHeaders([
             'Content-Type' => 'Application/json',
-            'Authorization' => 'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOlwvXC8xMjcuMC4wLjE6ODAwMFwvYXBpXC9hdXRoXC9sb2dpbiIsImlhdCI6MTY0NzIwNzA5NSwiZXhwIjoxNjQ3MjEwNjk1LCJuYmYiOjE2NDcyMDcwOTUsImp0aSI6IlVqeDhMdnNweFd0dXoxZlciLCJzdWIiOjEsInBydiI6IjIzYmQ1Yzg5NDlmNjAwYWRiMzllNzAxYzQwMDg3MmRiN2E1OTc2ZjcifQ.tfRqoYVQ8HC3L5PLk9g1rXKyNGsWYQWV5k0d0KUoiyE'
+            'Authorization' => 'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOlwvXC8xMjcuMC4wLjE6ODAwMFwvYXBpXC9hdXRoXC9sb2dpbiIsImlhdCI6MTY0ODM2ODcyNSwiZXhwIjoxNjQ4MzcyMzI1LCJuYmYiOjE2NDgzNjg3MjUsImp0aSI6IjNEM3NIaElOdUU5QmlOaGYiLCJzdWIiOjEsInBydiI6IjIzYmQ1Yzg5NDlmNjAwYWRiMzllNzAxYzQwMDg3MmRiN2E1OTc2ZjcifQ.-1NwGP3RoYpk7ut04Ha43sOcaeY774PQV50-Yhcsw1Q'
         ])->json(
             'POST',
             '/api/auth/deleteNoteById',
@@ -118,7 +118,7 @@ class NoteControllerTest extends TestCase
     {
         $response = $this->withHeaders([
             'Content-Type' => 'Application/json',
-            'Authorization' => 'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOlwvXC8xMjcuMC4wLjE6ODAwMFwvYXBpXC9hdXRoXC9sb2dpbiIsImlhdCI6MTY0NzI0MDA4NywiZXhwIjoxNjQ3MjQzNjg3LCJuYmYiOjE2NDcyNDAwODcsImp0aSI6Ik82ekdYRzVIZ014TVplMk8iLCJzdWIiOjEsInBydiI6IjIzYmQ1Yzg5NDlmNjAwYWRiMzllNzAxYzQwMDg3MmRiN2E1OTc2ZjcifQ.y3EyYrVm5Dm1IYvIFWRJsEFpo3-_-NPH9slwjDetiZY'
+            'Authorization' => 'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOlwvXC8xMjcuMC4wLjE6ODAwMFwvYXBpXC9hdXRoXC9sb2dpbiIsImlhdCI6MTY0ODM2ODcyNSwiZXhwIjoxNjQ4MzcyMzI1LCJuYmYiOjE2NDgzNjg3MjUsImp0aSI6IjNEM3NIaElOdUU5QmlOaGYiLCJzdWIiOjEsInBydiI6IjIzYmQ1Yzg5NDlmNjAwYWRiMzllNzAxYzQwMDg3MmRiN2E1OTc2ZjcifQ.-1NwGP3RoYpk7ut04Ha43sOcaeY774PQV50-Yhcsw1Q'
         ])->json(
             'POST',
             '/api/auth/pinNoteById',
@@ -137,7 +137,7 @@ class NoteControllerTest extends TestCase
     {
         $response = $this->withHeaders([
             'Content-Type' => 'Application/json',
-            'Authorization' => 'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOlwvXC8xMjcuMC4wLjE6ODAwMFwvYXBpXC9hdXRoXC9sb2dpbiIsImlhdCI6MTY0NzI0MDA4NywiZXhwIjoxNjQ3MjQzNjg3LCJuYmYiOjE2NDcyNDAwODcsImp0aSI6Ik82ekdYRzVIZ014TVplMk8iLCJzdWIiOjEsInBydiI6IjIzYmQ1Yzg5NDlmNjAwYWRiMzllNzAxYzQwMDg3MmRiN2E1OTc2ZjcifQ.y3EyYrVm5Dm1IYvIFWRJsEFpo3-_-NPH9slwjDetiZY'
+            'Authorization' => 'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOlwvXC8xMjcuMC4wLjE6ODAwMFwvYXBpXC9hdXRoXC9sb2dpbiIsImlhdCI6MTY0ODM2ODcyNSwiZXhwIjoxNjQ4MzcyMzI1LCJuYmYiOjE2NDgzNjg3MjUsImp0aSI6IjNEM3NIaElOdUU5QmlOaGYiLCJzdWIiOjEsInBydiI6IjIzYmQ1Yzg5NDlmNjAwYWRiMzllNzAxYzQwMDg3MmRiN2E1OTc2ZjcifQ.-1NwGP3RoYpk7ut04Ha43sOcaeY774PQV50-Yhcsw1Q'
         ])->json(
             'POST',
             '/api/auth/pinNoteById',
@@ -156,12 +156,12 @@ class NoteControllerTest extends TestCase
     {
         $response = $this->withHeaders([
             'Content-Type' => 'Application/json',
-            'Authorization' => 'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOlwvXC8xMjcuMC4wLjE6ODAwMFwvYXBpXC9hdXRoXC9sb2dpbiIsImlhdCI6MTY0NzI0MDA4NywiZXhwIjoxNjQ3MjQzNjg3LCJuYmYiOjE2NDcyNDAwODcsImp0aSI6Ik82ekdYRzVIZ014TVplMk8iLCJzdWIiOjEsInBydiI6IjIzYmQ1Yzg5NDlmNjAwYWRiMzllNzAxYzQwMDg3MmRiN2E1OTc2ZjcifQ.y3EyYrVm5Dm1IYvIFWRJsEFpo3-_-NPH9slwjDetiZY'
+            'Authorization' => 'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOlwvXC8xMjcuMC4wLjE6ODAwMFwvYXBpXC9hdXRoXC9sb2dpbiIsImlhdCI6MTY0ODM2ODcyNSwiZXhwIjoxNjQ4MzcyMzI1LCJuYmYiOjE2NDgzNjg3MjUsImp0aSI6IjNEM3NIaElOdUU5QmlOaGYiLCJzdWIiOjEsInBydiI6IjIzYmQ1Yzg5NDlmNjAwYWRiMzllNzAxYzQwMDg3MmRiN2E1OTc2ZjcifQ.-1NwGP3RoYpk7ut04Ha43sOcaeY774PQV50-Yhcsw1Q'
         ])->json(
             'POST',
             '/api/auth/archiveNoteById',
             [
-                "id" => "4"
+                "id" => "5"
             ]
         );
         $response->assertStatus(201)->assertJson(['message' => 'Note archived Successfully']);
@@ -175,7 +175,7 @@ class NoteControllerTest extends TestCase
     {
         $response = $this->withHeaders([
             'Content-Type' => 'Application/json',
-            'Authorization' => 'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOlwvXC8xMjcuMC4wLjE6ODAwMFwvYXBpXC9hdXRoXC9sb2dpbiIsImlhdCI6MTY0NzI0MDA4NywiZXhwIjoxNjQ3MjQzNjg3LCJuYmYiOjE2NDcyNDAwODcsImp0aSI6Ik82ekdYRzVIZ014TVplMk8iLCJzdWIiOjEsInBydiI6IjIzYmQ1Yzg5NDlmNjAwYWRiMzllNzAxYzQwMDg3MmRiN2E1OTc2ZjcifQ.y3EyYrVm5Dm1IYvIFWRJsEFpo3-_-NPH9slwjDetiZY'
+            'Authorization' => 'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOlwvXC8xMjcuMC4wLjE6ODAwMFwvYXBpXC9hdXRoXC9sb2dpbiIsImlhdCI6MTY0ODM2ODcyNSwiZXhwIjoxNjQ4MzcyMzI1LCJuYmYiOjE2NDgzNjg3MjUsImp0aSI6IjNEM3NIaElOdUU5QmlOaGYiLCJzdWIiOjEsInBydiI6IjIzYmQ1Yzg5NDlmNjAwYWRiMzllNzAxYzQwMDg3MmRiN2E1OTc2ZjcifQ.-1NwGP3RoYpk7ut04Ha43sOcaeY774PQV50-Yhcsw1Q'
         ])->json(
             'POST',
             '/api/auth/archiveNoteById',
@@ -194,12 +194,12 @@ class NoteControllerTest extends TestCase
     {
         $response = $this->withHeaders([
             'Content-Type' => 'Application/json',
-            'Authorization' => 'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOlwvXC8xMjcuMC4wLjE6ODAwMFwvYXBpXC9hdXRoXC9sb2dpbiIsImlhdCI6MTY0NzI0MDA4NywiZXhwIjoxNjQ3MjQzNjg3LCJuYmYiOjE2NDcyNDAwODcsImp0aSI6Ik82ekdYRzVIZ014TVplMk8iLCJzdWIiOjEsInBydiI6IjIzYmQ1Yzg5NDlmNjAwYWRiMzllNzAxYzQwMDg3MmRiN2E1OTc2ZjcifQ.y3EyYrVm5Dm1IYvIFWRJsEFpo3-_-NPH9slwjDetiZY'
+            'Authorization' => 'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOlwvXC8xMjcuMC4wLjE6ODAwMFwvYXBpXC9hdXRoXC9sb2dpbiIsImlhdCI6MTY0ODM2ODcyNSwiZXhwIjoxNjQ4MzcyMzI1LCJuYmYiOjE2NDgzNjg3MjUsImp0aSI6IjNEM3NIaElOdUU5QmlOaGYiLCJzdWIiOjEsInBydiI6IjIzYmQ1Yzg5NDlmNjAwYWRiMzllNzAxYzQwMDg3MmRiN2E1OTc2ZjcifQ.-1NwGP3RoYpk7ut04Ha43sOcaeY774PQV50-Yhcsw1Q'
         ])->json(
             'POST',
             '/api/auth/colourNoteById',
             [
-                "id" => "4",
+                "id" => "10",
                 "colour" => "green"
             ]
         );
@@ -214,7 +214,7 @@ class NoteControllerTest extends TestCase
     {
         $response = $this->withHeaders([
             'Content-Type' => 'Application/json',
-            'Authorization' => 'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOlwvXC8xMjcuMC4wLjE6ODAwMFwvYXBpXC9hdXRoXC9sb2dpbiIsImlhdCI6MTY0NzI0MDA4NywiZXhwIjoxNjQ3MjQzNjg3LCJuYmYiOjE2NDcyNDAwODcsImp0aSI6Ik82ekdYRzVIZ014TVplMk8iLCJzdWIiOjEsInBydiI6IjIzYmQ1Yzg5NDlmNjAwYWRiMzllNzAxYzQwMDg3MmRiN2E1OTc2ZjcifQ.y3EyYrVm5Dm1IYvIFWRJsEFpo3-_-NPH9slwjDetiZY'
+            'Authorization' => 'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOlwvXC8xMjcuMC4wLjE6ODAwMFwvYXBpXC9hdXRoXC9sb2dpbiIsImlhdCI6MTY0ODM2ODcyNSwiZXhwIjoxNjQ4MzcyMzI1LCJuYmYiOjE2NDgzNjg3MjUsImp0aSI6IjNEM3NIaElOdUU5QmlOaGYiLCJzdWIiOjEsInBydiI6IjIzYmQ1Yzg5NDlmNjAwYWRiMzllNzAxYzQwMDg3MmRiN2E1OTc2ZjcifQ.-1NwGP3RoYpk7ut04Ha43sOcaeY774PQV50-Yhcsw1Q'
         ])->json(
             'POST',
             '/api/auth/colourNoteById',
