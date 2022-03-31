@@ -195,7 +195,7 @@
                     "201": {
                         "description": "password reset link genereted in mail"
                     },
-                    "404": {
+                    "200": {
                         "description": "we can not find a user with that email address"
                     }
                 },
@@ -1019,6 +1019,114 @@
                         "description": "User successfully signed out"
                     }
                 }
+            }
+        },
+        "/api/auth/addProfileImage": {
+            "post": {
+                "summary": "Add profile",
+                "description": "user profile image",
+                "operationId": "b67e50a7415e01cd33367f16a314b526",
+                "requestBody": {
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "required": [
+                                    "image"
+                                ],
+                                "properties": {
+                                    "image": {
+                                        "type": "file"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        },
+                        "application/json": {
+                            "schema": {}
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Profilepic Successsfully Added"
+                    },
+                    "401": {
+                        "description": "We cannot find a user"
+                    }
+                },
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ]
+            }
+        },
+        "/api/auth/updateProfileImage": {
+            "post": {
+                "summary": "update profile",
+                "description": "update profile image",
+                "operationId": "3b70d43c8fed32fe4d5d2f2a65bcb2e0",
+                "requestBody": {
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "required": [
+                                    "image"
+                                ],
+                                "properties": {
+                                    "image": {
+                                        "type": "file"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        },
+                        "application/json": {
+                            "schema": {}
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Profilepic Successsfully update"
+                    },
+                    "401": {
+                        "description": "We cannot find a user"
+                    }
+                },
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ]
+            }
+        },
+        "/api/auth/deleteProfileImage": {
+            "delete": {
+                "summary": "delete profile",
+                "description": "delete profile image",
+                "operationId": "322640b8b7ae9971a0516e127edc3f3e",
+                "requestBody": {
+                    "content": {
+                        "multipart/form-data": {},
+                        "application/json": {
+                            "schema": {}
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Profilepic Deleted Successsfully"
+                    },
+                    "401": {
+                        "description": "We cannot find a user"
+                    }
+                },
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ]
             }
         }
     },

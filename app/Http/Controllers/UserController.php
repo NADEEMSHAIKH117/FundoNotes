@@ -211,6 +211,28 @@ class UserController extends Controller
     }
 
     /**
+     * @OA\Post(
+     *   path="/api/auth/addProfileImage",
+     *   summary="Add profile",
+     *   description="user profile image",
+     *   @OA\RequestBody(
+     *         @OA\JsonContent(),
+     *         @OA\MediaType(
+     *            mediaType="multipart/form-data",
+     *            @OA\Schema(
+     *               type="object",
+     *               required={"image"},
+     *               @OA\Property(property="image", type="file"),
+     *            ),
+     *        ),
+     *    ),
+     *   @OA\Response(response=201, description="Profilepic Successsfully Added"),
+     *   @OA\Response(response=401, description="We cannot find a user"),
+     *   security={
+     *       {"Bearer": {}}
+     *     }
+     * )
+     * 
      * This function will take image
      * as input and save in AWS S3
      * and will save link in database
@@ -238,6 +260,35 @@ class UserController extends Controller
         }
     }
 
+
+    /**
+     * @OA\Post(
+     *   path="/api/auth/updateProfileImage",
+     *   summary="update profile",
+     *   description="update profile image",
+     *   @OA\RequestBody(
+     *         @OA\JsonContent(),
+     *         @OA\MediaType(
+     *            mediaType="multipart/form-data",
+     *            @OA\Schema(
+     *               type="object",
+     *               required={"image"},
+     *               @OA\Property(property="image", type="file"),
+     *            ),
+     *        ),
+     *    ),
+     *   @OA\Response(response=201, description="Profilepic Successsfully update"),
+     *   @OA\Response(response=401, description="We cannot find a user"),
+     *   security={
+     *       {"Bearer": {}}
+     *     }
+     * )
+     * 
+     * This function will take image
+     * as input and update image in AWS S3
+     * and will save link in database
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function updateProfileImage(Request $request)
     { {
             $request->validate([
@@ -271,6 +322,29 @@ class UserController extends Controller
         }
     }
 
+    /**
+     * @OA\Delete(
+     *   path="/api/auth/deleteProfileImage",
+     *   summary="delete profile",
+     *   description="delete profile image",
+     *   @OA\RequestBody(
+     *         @OA\JsonContent(),
+     *         @OA\MediaType(
+     *            mediaType="multipart/form-data",
+     *        ),
+     *    ),
+     *   @OA\Response(response=201, description="Profilepic Deleted Successsfully"),
+     *   @OA\Response(response=401, description="We cannot find a user"),
+     *   security={
+     *       {"Bearer": {}}
+     *     }
+     * )
+     * 
+     * This function will delete profile
+     * image in AWS S3
+     * and will save link in database
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function deleteProfileImage()
     {
         $user = JWTAuth::user();
@@ -284,7 +358,7 @@ class UserController extends Controller
             }
             // $user->delete();
             return response()->json([
-                'message' => 'Profilepic Deleted Successsfully '
+                'message' => 'Profilepic Deleted Successsfully'
             ], 201);
         } else {
             return response()->json(['message' => 'We cannot find a user'], 400);
