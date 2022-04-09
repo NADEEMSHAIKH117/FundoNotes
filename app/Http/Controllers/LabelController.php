@@ -58,12 +58,6 @@ class LabelController extends Controller
 
         $currentUser = JWTAuth::parseToken()->authenticate();
         if ($currentUser) {
-            $labelName = Label::where('labelname', $request->lablename)->first();
-            if ($labelName) {
-                Log::alert('Label Created : ', ['email' => $request->email]);
-                return response()->json(['message' => 'Label Name already exists'], 401);
-            }
-
             $label = new Label;
             $label->labelname = $request->get('labelname');
             Cache::remember('labels', 3600, function () {

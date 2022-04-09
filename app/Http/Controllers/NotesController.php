@@ -89,11 +89,7 @@ class NotesController extends Controller
         } else {
             $colour = $request->input('colour');
         }
-        // if (($request->has('label_id')) == null) {
-        //     $label_id = 0;
-        // } else {
-        //     $label_id = $request->input('label_id');
-        // }
+
         try {
             $note = new Notes;
             $note->title = $request->input('title');
@@ -101,19 +97,6 @@ class NotesController extends Controller
             $note->pin = $pin;
             $note->archive = $archive;
             $note->colour = $colour;
-            // $note->label_id = $label_id;
-
-            // if ($label_id) {
-            //     $label_id = LabelNotes::where('label_id', $request->label_id)->first();
-
-            //     if ($label_id) {
-            //         return response()->json([
-            //             'status' => 409,
-            //             'message' => 'Note Already have a label'
-            //         ], 409);
-            //     }
-            //     return $label_id;
-            // }
 
             $colour_name = strtolower($request->colour);
             if (isset(NotesController::$colours[$colour_name])) {
@@ -228,7 +211,6 @@ class NotesController extends Controller
             'pin' => 'int|between:0,1',
             'archive' => 'int|between:0,1',
             'colour' => 'string|max:20',
-            'label' => 'string|max:20'
         ]);
         if ($validator->fails()) {
             return response()->json($validator->errors()->toJson(), 401);
@@ -249,10 +231,10 @@ class NotesController extends Controller
             $note->fill($request->all());
 
             $colour_name = strtolower($request->colour);
-
             if (isset(NotesController::$colours[$colour_name])) {
                 $note->colour = NotesController::$colours[$colour_name];
             }
+            
             $note->user_id = Auth::user()->id;
 
             if ($note->save()) {
